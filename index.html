@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>JHU Color</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <h1>Color Test</h1>
+        <div id="container">
+        </div>
+        <div class="slideshow"><h2 class="num">1</h2><a class='prev'></a><a class='next'></a></div>
+        <script type="text/json" id="colors">
+        [
+            {
+                "name": "Logo",
+                "families": ["blues", "blues dark", "jhu"],
+                "rgb": [0, 45, 114]
+            },
+            {
+                "name": "Copper Petina",
+                "families": ["blues", "blues light", "greens", "jhu", "campus"],
+                "rgb": [184, 221, 225]
+            },
+            {
+                "name": "Oak Leaves",
+                "families": ["greens", "brights", "jhu", "campus"],
+                "rgb": [116, 170, 80]
+            },
+            {
+                "name": "Copper Roof",
+                "families": ["oranges", "reds", "reds light", "jhu", "campus"],
+                "rgb": [232, 146, 124]
+            },
+            {
+                "name": "Gilman Atrium",
+                "families": ["greys", "jhu", "campus"],
+                "rgb": [215, 210, 203]
+            },
+            {
+                "name": "Building Brick",
+                "families": ["reds", "oranges", "browns", "jhu", "campus"],
+                "rgb": [170, 128, 102]
+            },
+            {
+                "name": "HUT Stained Glass",
+                "families": ["reds", "reds dark", "jhu", "campus"],
+                "rgb": [167, 43, 42]
+            },
+            {
+                "name": "Brody Wall",
+                "families": ["blues", "blues dark", "brights", "jhu", "campus"],
+                "rgb": [65, 143, 222]
+            },
+            {
+                "name": "Comm Teal",
+                "families": ["blues", "blues light", "greens", "teals", "jhu", "communications"],
+                "rgb": [134, 200, 188]
+            },
+            {
+                "name": "Comm Gold",
+                "families": ["yellows", "oranges", "jhu", "communications"],
+                "rgb": [240, 179, 35]
+            },
+            {
+                "name": "Nursing Stairwell",
+                "families": ["browns", "browns light", "jhu", "campus"],
+                "rgb": [217, 200, 158]
+            },
+            {
+                "name": "Pathway Brick Red",
+                "families": ["reds", "jhu", "campus"],
+                "rgb": [194, 110, 96]
+            },
+            {
+                "name": "Comm Red",
+                "families": ["reds", "brights", "jhu", "communications"],
+                "rgb": [224, 60, 49]
+            },
+            {
+                "name": "Stained Glass",
+                "families": ["blues", "jhu", "campus"],
+                "rgb": [99, 153, 174]
+            },
+            {
+                "name": "Baseball Grass",
+                "families": ["browns", "browns light", "greens", "greens light", "jhu", "campus"],
+                "rgb": [202, 182, 75]
+            },
+            {
+                "name": "Athletics Showcase",
+                "families": ["oranges", "jhu", "campus"],
+                "rgb": [219, 138, 6]
+            },
+            {
+                "name": "Telescope Ceiling",
+                "families": ["browns", "browns light", "jhu", "campus"],
+                "rgb": [221, 164, 111]
+            },
+            {
+                "name": "Pathway Brick Purple",
+                "families": ["purples", "jhu", "campus"],
+                "rgb": [134, 100, 122]
+            },
+            {
+                "name": "Nursing Ceiling",
+                "families": ["reds", "pinks", "jhu", "campus"],
+                "rgb": [230, 134, 153]
+            },
+            {
+                "name": "Comm Blue",
+                "families": ["blues", "brights", "jhu", "communications"],
+                "rgb": [41, 143, 194]
+            },
+            {
+                "name": "Brody Chair",
+                "families": ["blues", "blues dark", "jhu", "campus"],
+                "rgb": [0, 87, 184]
+            },
+            {
+                "name": "Magnolia Leaves",
+                "families": ["greens", "greens dark", "jhu", "campus"],
+                "rgb": [68, 105, 61]
+            },
+            {
+                "name": "Gilman Stairwell",
+                "families": ["yellows", "brights", "jhu", "campus"],
+                "rgb": [243, 208, 62]
+            },
+            {
+                "name": "Slate Roof",
+                "families": ["purples", "browns", "jhu", "campus"],
+                "rgb": [163, 127, 116]
+            },
+            {
+                "name": "Eric Purple",
+                "families": ["purples", "brights", "jhu", "eric"],
+                "rgb": [142, 58, 128]
+            },
+            {
+                "name": "Medical Gloves",
+                "families": ["purples", "brights", "jhu", "campus"],
+                "rgb": [150, 60, 189]
+            },
+            {
+                "name": "Comm Slate",
+                "families": ["blues", "blues light", "jhu", "communications"],
+                "rgb": [167, 188, 214]
+            },
+            {
+                "name": "UTL Glass",
+                "families": ["blues", "blues dark", "jhu", "campus"],
+                "rgb": [50, 98, 149]
+            },
+            {
+                "name": "Magazine Teal",
+                "families": ["blues", "teals", "brights", "jhu", "magazine"],
+                "rgb": [0, 171, 142]
+            },
+            {
+                "name": "Eric Orange",
+                "families": ["oranges", "brights", "jhu", "eric"],
+                "rgb": [255, 105, 0]
+            },
+            {
+                "name": "Mason Doors",
+                "families": ["browns", "oranges", "jhu", "campus"],
+                "rgb": [158, 83, 48]
+            },
+            {
+                "name": "Comm Purple",
+                "families": ["purples", "purples light", "jhu", "communications"],
+                "rgb": [124, 127, 171]
+            }
+        ]
+        </script>
+
+        <script src="js/jquery.js"></script>
+        <script src="js/isotope.js"></script>
+        <script src="js/masonry-horizontal.js"></script>
+        <script src="js/colorConverter.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>
