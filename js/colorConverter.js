@@ -54,7 +54,7 @@ ColorConverter.prototype.percentify = function (value) {
 ColorConverter.prototype.rgbToHsl = function (rgb) {
     var hue, saturation, lightness;
     this.rgbInit(rgb);
-    
+
     hue = this.getHue();
     lightness = this.getLightness();
     saturation = this.getHslSaturation(lightness);

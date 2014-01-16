@@ -1,3 +1,4 @@
+@charset "UTF-8";
 body {
   font-family: Gentona, "Myriad Pro"; }
 
@@ -59,6 +60,7 @@ body {
   opacity: 0;
   -webkit-transition: all 0.2s ease-out; }
   .slideshow a {
+    display: none;
     cursor: pointer;
     position: fixed;
     width: 20%;
@@ -68,8 +70,9 @@ body {
       left: 0; }
     .slideshow a.next {
       right: 0; }
-  .slideshow .num {
-    font-size: 50px;
+  .slideshow .label {
+    font-size: 30px;
+    text-transform: uppercase;
     opacity: 0.5;
     width: 100%;
     font-weight: bold;
@@ -78,3 +81,40 @@ body {
     position: absolute;
     left: 0;
     bottom: 10px; }
+
+.hsl-range div {
+  position: relative; }
+  .hsl-range div.current:before {
+    content: "◀";
+    position: absolute;
+    right: -7px;
+    font-size: 14px;
+    line-height: 14px;
+    top: 50%;
+    margin-top: -7px;
+    opacity: 0.5; }
+  .hsl-range div span {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    line-height: 12px;
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    margin-top: -6px; }
+
+.palette-suggestions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 35%; }
+  .palette-suggestions .section {
+    clear: left;
+    overflow: hidden;
+    margin-bottom: 5px; }
+    .palette-suggestions .section h4 {
+      margin-bottom: 5px; }
+    .palette-suggestions .section .swatch {
+      width: 50px;
+      height: 50px;
+      float: left;
+      margin-right: 10px; }
