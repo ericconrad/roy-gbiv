@@ -39,7 +39,7 @@ function modifyResult(hue) {
 }
 
 
-function computeRyb = function (base, modifier) {
+function computeRyb(base, modifier) {
     var result = modifyBase(base) + modifier;
     if (result > 360) { result -= 360; }
     if (result < 0) { result += 360; }

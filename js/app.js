@@ -198,14 +198,44 @@ Roy.prototype.hideshow = function (e) {
 Roy.prototype.buildPalette = function (base) {
     var palette = $("<div>").addClass('palette-suggestions');
 
+    // Analagous
+    palette.append(this.buildPaletteSection('Analagous Palette', this.getAnalagous(base)));
+
     // Complementary
-    palette.append(this.buildPaletteSection('Complementary Palette', this.getComplements(base, 3)));
+    palette.append(this.buildPaletteSection('Complementary Palette', this.getComplements(base, 5)));
+
+    // Split Complements
+    // palette.append(this.buildPaletteSection('Split Complement Palette', this.getSplitComplements(base)));
 
     // Triads
     palette.append(this.buildPaletteSection('Triad Palette', this.getTriads(base)));
-    
-    // Analagous
-    palette.append(this.buildPaletteSection('Analagous Palette', this.getAnalagous(base)));
+
+    // Square
+    palette.append(this.buildPaletteSection('Square Palette', this.getSquareColors(base)));
+
+    // Tetradic Positive
+    palette.append(this.buildPaletteSection('Tetradic Positive Palette', this.getTetradicPositive(base)));
+
+    // Tetradic Negative
+    palette.append(this.buildPaletteSection('Tetradic Negative Palette', this.getTetradicNegative(base)));
+
+
+    this.slideshow.on('click', '.swatch', function (e) {
+        e.stopPropagation();
+
+        var label = $("<span>").text($(this).data('color').name)
+            .css({
+                position: "absolute",
+                fontSize: "12px",
+                lineHeight: "12px",
+                color: "rgba(0,0,0,0.5)",
+                fontWeight: "normal",
+                bottom: "3px",
+                left: "2px"
+            });
+
+        $(this).append(label).css({ position: "relative" });
+    });
 
     return palette;
 };
@@ -213,11 +243,19 @@ Roy.prototype.buildPalette = function (base) {
 Roy.prototype.buildPaletteSection = function (title, colors) {
     var section = $("<div>").addClass('section');
     section.append($("<h4>").text(title));
-
+    
     $.each(colors, function (i, color) {
+        var label = $("<span>").text(color.color.name)
+            .css({
+                position: "absolute",
+                fontSize: "12px",
+                lineHeight: "12px",
+                bottom: "3px",
+                left: "2px"
+            });
         section.append($("<div>").css({ 
             backgroundColor: "hsl(" + color.values.join(",") + ")"
-        }).data('name', color.name).addClass('swatch'));
+        }).data('color', color.color).addClass('swatch'));
     });
 
     return section;
@@ -293,7 +331,8 @@ Roy.prototype.hslColors = function () {
     r.hslColorList = [];
 
     $.each(r.colors, function (i, color) {
-        r.hslColorList.push(r.converter.rgbToHsl(color.rgb));
+        color.hsl = r.converter.rgbToHsl(color.rgb);
+        r.hslColorList.push(color);
     });
     return r.hslColorList;
 };
@@ -309,25 +348,28 @@ Roy.prototype.getRelatedColors = function (base, options) {
 
     options = $.extend(true, {}, defaults, options);
 
-    base.hue = hsl[0];
+    base.hue = modifyBase(hsl[0]);
     base.related = base.hue + options.angle;
     if (base.related > 360) {
         base.related -= 360;
     } else if (base.related < 0) {
         base.related += 360;
     }
+    base.related = modifyResult(base.related);
 
     var compared = $.map(r.hslColors(), function (color) {
-        var both = [color[0], base.related];
+        var both = [color.hsl[0], base.related];
         var max = Math.max.apply(null, both);
         var min = Math.min.apply(null, both);
         var diff = max - min;
-        var hsl = {};
 
-        hsl.values = color;
-        hsl.diff = (diff <= 180) ? diff : 360 - max + min;
+        var result = {};
 
-        return hsl;
+        result.color = color;
+        result.values = color.hsl;
+        result.diff = (diff <= 180) ? diff : 360 - max + min;
+
+        return result;
     });
 
     compared.sort(function (a, b) {
@@ -339,12 +381,25 @@ Roy.prototype.getRelatedColors = function (base, options) {
 
 Roy.prototype.getComplements = function (base, n) {
     n = n || 3;
+
     return this.getRelatedColors(base, { n: n, angle: 180 });
+};
+
+Roy.prototype.getSplitComplements = function (base, n) {
+    var batch = [];
+    n = n || 4;
+    n = Math.round(n / 2);
+
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 150 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: -150 }));
+
+    return batch;
 };
 
 Roy.prototype.getTriads = function (base, n) {
     var batch = [];
-    n = n || 2;
+    n = n || 4;
+    n = Math.round(n / 2);
 
     batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 120 }));
     batch = batch.concat(this.getRelatedColors(base, {n: n, angle: -120 }));
@@ -354,10 +409,37 @@ Roy.prototype.getTriads = function (base, n) {
 
 Roy.prototype.getAnalagous = function (base, n) {
     var batch = [];
-    n = n || 5;
+    n = n || 6;
 
     batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 0 }));
-    // batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 0 }));
+
+    // Remove first because it's the main color
+    return batch.slice(1);
+};
+
+Roy.prototype.getSquareColors = function (base) {
+    var batch = [];
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 90 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 180 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -90 }));
+
+    return batch;
+};
+
+Roy.prototype.getTetradicPositive = function (base) {
+    var batch = [];
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 60 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 180 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 240 }));
+
+    return batch;
+};
+
+Roy.prototype.getTetradicNegative = function (base) {
+    var batch = [];
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -60 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -180 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -240 }));
 
     return batch;
 };
