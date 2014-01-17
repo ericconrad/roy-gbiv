@@ -166,6 +166,17 @@ Roy.prototype.setshow = function () {
         }
     })
     r.slideshow.find('a.prev').on('click', goPrev);
+
+    r.slideshow.on('click', '.swatch', function (e) {
+        e.stopPropagation();
+        $(this).find('.label').toggle(200);        
+    });
+
+    r.slideshow.on('click', '.palette-suggestions .section', function (e) {
+        e.stopPropagation();
+        console.log('clickity');
+        $(this).toggleClass('show');
+    });
 }
 
 Roy.prototype.showshow = function (e) {
@@ -181,6 +192,7 @@ Roy.prototype.showshow = function (e) {
         r.applyHslRange(r.slideshow, color);
         r.slideshow.find('.label').text($(this).data('name'));
 
+        console.log('show show time');
         r.slideshow.append(r.buildPalette(color));
     });
 };
@@ -191,6 +203,8 @@ Roy.prototype.hideshow = function (e) {
         opacity: 0,
         background: 'white'
     });
+
+    $(".palette-suggestions").remove();
 
     $(".color-squares").find('div').removeClass('show-active');
 };
@@ -218,17 +232,6 @@ Roy.prototype.buildPalette = function (base) {
 
     // Tetradic Negative
     palette.append(this.buildPaletteSection('Tetradic Negative Palette', this.getTetradicNegative(base)));
-
-
-    this.slideshow.on('click', '.swatch', function (e) {
-        e.stopPropagation();
-        $(this).find('.label').toggle(200);        
-    });
-
-    this.slideshow.on('click', '.section', function (e) {
-        e.stopPropagation();
-        $(this).toggleClass('show');
-    })
 
     return palette;
 };
