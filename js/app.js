@@ -5,6 +5,10 @@ var Roy = function (options) {
     this.html = $("<div>").addClass("color-squares");
     this.filters = [];
     this.converter = new ColorConverter();
+
+    if (this.options.dataSelector) {
+        this.getColorJson();
+    }
 };
 
 Roy.prototype.filterExists = function (filter) {
@@ -123,11 +127,17 @@ Roy.prototype.setshow = function () {
     var goTo = function (e, current, target) {
         e.stopPropagation();
 
+        $(".hsl-range").remove();
+        r.applyHslRange(r.slideshow, target.data())
+
         current.removeClass('show-active');
         target.addClass('show-active');
 
         r.slideshow.css({ background: 'rgb(' + target.data('rgb').join(',') + ')' });
-        r.slideshow.find('.num').text(target.index());
+        r.slideshow.find('.label').text(target.data('name'));
+
+        $(".palette-suggestions").remove();
+        r.slideshow.append(r.buildPalette(target.data()));
     };
     var goNext = function (e) {
         var current = r.html.find('div.show-active');
@@ -169,7 +179,9 @@ Roy.prototype.showshow = function (e) {
             background: 'rgb(' + color.rgb.join(',') + ')'
         });
         r.applyHslRange(r.slideshow, color);
-        r.slideshow.find('.num').text($(this).index());
+        r.slideshow.find('.label').text($(this).data('name'));
+
+        r.slideshow.append(r.buildPalette(color));
     });
 };
 
@@ -183,13 +195,253 @@ Roy.prototype.hideshow = function (e) {
     $(".color-squares").find('div').removeClass('show-active');
 };
 
+Roy.prototype.buildPalette = function (base) {
+    var palette = $("<div>").addClass('palette-suggestions');
+
+    // Analagous
+    palette.append(this.buildPaletteSection('Analagous Palette', this.getAnalagous(base)));
+
+    // Complementary
+    palette.append(this.buildPaletteSection('Complementary Palette', this.getComplements(base, 5)));
+
+    // Split Complements
+    // palette.append(this.buildPaletteSection('Split Complement Palette', this.getSplitComplements(base)));
+
+    // Triads
+    palette.append(this.buildPaletteSection('Triad Palette', this.getTriads(base)));
+
+    // Square
+    palette.append(this.buildPaletteSection('Square Palette', this.getSquareColors(base)));
+
+    // Tetradic Positive
+    palette.append(this.buildPaletteSection('Tetradic Positive Palette', this.getTetradicPositive(base)));
+
+    // Tetradic Negative
+    palette.append(this.buildPaletteSection('Tetradic Negative Palette', this.getTetradicNegative(base)));
+
+
+    this.slideshow.on('click', '.swatch', function (e) {
+        e.stopPropagation();
+
+        var label = $("<span>").text($(this).data('color').name)
+            .css({
+                position: "absolute",
+                fontSize: "12px",
+                lineHeight: "12px",
+                color: "rgba(0,0,0,0.5)",
+                fontWeight: "normal",
+                bottom: "3px",
+                left: "2px"
+            });
+
+        $(this).append(label).css({ position: "relative" });
+    });
+
+    return palette;
+};
+
+Roy.prototype.buildPaletteSection = function (title, colors) {
+    var section = $("<div>").addClass('section');
+    section.append($("<h4>").text(title));
+    
+    $.each(colors, function (i, color) {
+        var label = $("<span>").text(color.color.name)
+            .css({
+                position: "absolute",
+                fontSize: "12px",
+                lineHeight: "12px",
+                bottom: "3px",
+                left: "2px"
+            });
+        section.append($("<div>").css({ 
+            backgroundColor: "hsl(" + color.values.join(",") + ")"
+        }).data('color', color.color).addClass('swatch'));
+    });
+
+    return section;
+};
+
 Roy.prototype.applyHslRange = function (container, color) {
     var range = $("<div>").addClass("hsl-range");
     var hsl = this.converter.rgbToHsl(color.rgb);
+    var values = this.getHslValues(hsl, 5);
+    var winHeight = $(window).height();
 
-    range.html("<a href='http://google.com'>mein color!</a>");
-    
+    // console.log(values.indexOf(hsl));
+
+    $.each(values, function (i, value) {
+        var diff = parseInt(value[2], 10) - parseInt(hsl[2], 10);
+        if (diff > 0) diff = "+" + diff;
+        var labelColor = (parseInt(value[2], 10) < 50) ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)";
+        var shade = $("<div>").css({
+            backgroundColor: "hsl(" + value.join(",") + ")",
+            width: "10%",
+            height: (winHeight / values.length) + "px"
+        }).html("<span style='color: " + labelColor + "'>" + (diff ? diff + '%' : '') + "</span>");
+
+        if (value.join("") === hsl.join("")) {
+            shade.addClass("current");
+        }
+
+        range.append(shade);
+    });
+
     container.prepend(range);
+};
+
+
+
+Roy.prototype.getHslValues = function (hsl, increment) {
+    var lightness = parseInt(hsl[2], 10) / 100;
+    var startingLightness = lightness;
+    var increment = increment / 100;
+    var values = [];
+
+    while (this.shouldHslUp(lightness, increment)) {
+        lightness = ((lightness * 1000) + (increment * 1000)) / 1000;
+        values.push(lightness);
+    }
+
+    lightness = startingLightness;
+
+    values.reverse();
+    values.push(lightness);
+
+    while (this.shouldHslDown(lightness, increment)) {
+        lightness = ((lightness * 1000) - (increment * 1000)) / 1000;
+        values.push(lightness);
+    }
+
+    return values.map(function (v) {
+        return [hsl[0], hsl[1], Math.round(v * 100) + "%"];
+    });
+};
+
+Roy.prototype.shouldHslDown = function (l, i) {
+    return Math.round(l * 100) - Math.round(i * 100) > 0;
+};
+
+Roy.prototype.shouldHslUp = function (l, i) {
+    return Math.round(l * 100) + Math.round(i * 100) < 100;
+}
+
+Roy.prototype.hslColors = function () {
+    var r = this;
+    if (r.hslColorList) return r.hslColorList;
+    r.hslColorList = [];
+
+    $.each(r.colors, function (i, color) {
+        color.hsl = r.converter.rgbToHsl(color.rgb);
+        r.hslColorList.push(color);
+    });
+    return r.hslColorList;
+};
+
+Roy.prototype.getRelatedColors = function (base, options) {
+    var r = this;
+    var hsl = this.converter.rgbToHsl(base.rgb);
+    var comp;
+    var defaults = {
+        n: 3,
+        angle: 180
+    }
+
+    options = $.extend(true, {}, defaults, options);
+
+    base.hue = modifyBase(hsl[0]);
+    base.related = base.hue + options.angle;
+    if (base.related > 360) {
+        base.related -= 360;
+    } else if (base.related < 0) {
+        base.related += 360;
+    }
+    base.related = modifyResult(base.related);
+
+    var compared = $.map(r.hslColors(), function (color) {
+        var both = [color.hsl[0], base.related];
+        var max = Math.max.apply(null, both);
+        var min = Math.min.apply(null, both);
+        var diff = max - min;
+
+        var result = {};
+
+        result.color = color;
+        result.values = color.hsl;
+        result.diff = (diff <= 180) ? diff : 360 - max + min;
+
+        return result;
+    });
+
+    compared.sort(function (a, b) {
+        return a.diff - b.diff > 0 ? 1 : -1;
+    });
+
+    return compared.slice(0, options.n);
+};
+
+Roy.prototype.getComplements = function (base, n) {
+    n = n || 3;
+
+    return this.getRelatedColors(base, { n: n, angle: 180 });
+};
+
+Roy.prototype.getSplitComplements = function (base, n) {
+    var batch = [];
+    n = n || 4;
+    n = Math.round(n / 2);
+
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 150 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: -150 }));
+
+    return batch;
+};
+
+Roy.prototype.getTriads = function (base, n) {
+    var batch = [];
+    n = n || 4;
+    n = Math.round(n / 2);
+
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 120 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: -120 }));
+
+    return batch;
+};
+
+Roy.prototype.getAnalagous = function (base, n) {
+    var batch = [];
+    n = n || 6;
+
+    batch = batch.concat(this.getRelatedColors(base, {n: n, angle: 0 }));
+
+    // Remove first because it's the main color
+    return batch.slice(1);
+};
+
+Roy.prototype.getSquareColors = function (base) {
+    var batch = [];
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 90 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 180 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -90 }));
+
+    return batch;
+};
+
+Roy.prototype.getTetradicPositive = function (base) {
+    var batch = [];
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 60 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 180 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: 240 }));
+
+    return batch;
+};
+
+Roy.prototype.getTetradicNegative = function (base) {
+    var batch = [];
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -60 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -180 }));
+    batch = batch.concat(this.getRelatedColors(base, {n: 1, angle: -240 }));
+
+    return batch;
 };
 
 $(document).ready(function ($) {
@@ -224,3 +476,13 @@ $(document).ready(function ($) {
     roy.setFilters();
     roy.setshow();
 });
+
+
+
+window.complement = function (base) {
+    return computeRyb(base, 180);
+};
+
+window.triad = function (base) {
+    return [computeRyb(base, 120), computeRyb(base, -120)];
+}
