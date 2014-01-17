@@ -132,7 +132,7 @@ body {
       content: "✕";
       opacity: 0.5; }
     .palette-suggestions .section:hover {
-      opacity: 0.2; }
+      opacity: 1; }
     .palette-suggestions .section.show {
       opacity: 1; }
     .palette-suggestions .section h4 {
