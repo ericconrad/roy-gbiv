@@ -222,20 +222,13 @@ Roy.prototype.buildPalette = function (base) {
 
     this.slideshow.on('click', '.swatch', function (e) {
         e.stopPropagation();
-
-        var label = $("<span>").text($(this).data('color').name)
-            .css({
-                position: "absolute",
-                fontSize: "12px",
-                lineHeight: "12px",
-                color: "rgba(0,0,0,0.5)",
-                fontWeight: "normal",
-                bottom: "3px",
-                left: "2px"
-            });
-
-        $(this).append(label).css({ position: "relative" });
+        $(this).find('.label').toggle(200);        
     });
+
+    this.slideshow.on('click', '.section', function (e) {
+        e.stopPropagation();
+        $(this).toggleClass('show');
+    })
 
     return palette;
 };
@@ -245,17 +238,10 @@ Roy.prototype.buildPaletteSection = function (title, colors) {
     section.append($("<h4>").text(title));
     
     $.each(colors, function (i, color) {
-        var label = $("<span>").text(color.color.name)
-            .css({
-                position: "absolute",
-                fontSize: "12px",
-                lineHeight: "12px",
-                bottom: "3px",
-                left: "2px"
-            });
+        var label = $("<span>").text(color.color.name).addClass('label');
         section.append($("<div>").css({ 
             backgroundColor: "hsl(" + color.values.join(",") + ")"
-        }).data('color', color.color).addClass('swatch'));
+        }).data('color', color.color).addClass('swatch').append(label));
     });
 
     return section;
