@@ -1,27 +1,6 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>JHU Color Board</title>
-        <meta name="viewport" content="width=device-width">
-
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-
-        <link rel="stylesheet" href="css/style.css">
-    </head>
-    <body>
-        <h1>Color Test</h1>
-        <div id="container">
-        </div>
-        <div class="slideshow"><h2 class="label"></h2><a class='prev'></a><a class='next'></a></div>
-        <script type="text/json" id="colors">
-        [
+[
             {
-                "name": "Newer HUT Glass",
+                "name": "Comm Red 179",
                 "families": ["reds", "communications"],
                 "pms": "179 C",
                 "rgb": [224, 60, 49]
@@ -39,7 +18,7 @@
                 "rgb": [207, 69, 32]
             },
             {
-                "name": "Tangerine",
+                "name": "Eric Bright Orange",
                 "families": ["oranges", "eric-added", "newly-added"],
                 "pms": "1505 C",
                 "rgb": [255, 105, 0]
@@ -51,23 +30,47 @@
                 "rgb": [255, 158, 27]
             },
             {
-                "name": "Sunlight",
+                "name": "Sunlight I",
                 "families": ["yellows", "for-review", "newly-added"],
                 "pms": "1215 C",
                 "rgb": [251, 216, 114]
             },
+            // {
+            //     "name": "Sunlight II",
+            //     "families": ["yellows", "for-review-2", "newly-added"],
+            //     "pms": "1205 C",
+            //     "rgb": [248, 224, 142]
+            // },
             {
                 "name": "New Academic Gold",
                 "families": ["yellows", "for-review", "newly-added"],
                 "pms": "116 C",
                 "rgb": [255, 205, 0]
             },
+            // {
+            //     "name": "Old Academic Gold (DEP)",
+            //     "families": ["yellows", "for-review-1", "newly-added"],
+            //     "pms": "7406 C",
+            //     "rgb": [241, 196, 0]
+            // },
+            // {
+            //     "name": "Caution (DEP)",
+            //     "families": ["yellows", "for-review-1", "newly-added"],
+            //     "pms": "108 C",
+            //     "rgb": [254, 219, 0]
+            // },
             {
                 "name": "Lemon",
                 "families": ["yellows", "newly-added", "for-review"],
                 "pms": "101 C",
                 "rgb": [247, 234, 72]
             },
+            // {
+            //     "name": "Sorbet (Dep)",
+            //     "families": ["yellows", "newly-added"],
+            //     "pms": "3945 C",
+            //     "rgb": [243, 229, 0]
+            // },
             {
                 "name": "CTY Green",
                 "families": ["greens", "cty", "newly-added"],
@@ -87,6 +90,18 @@
                 "pms": "7489 C",
                 "rgb": [116, 170, 80]
             },
+            // {
+            //     "name": "Magnolia Leaves (DEP)",
+            //     "families": ["greens", "campus"],
+            //     "pms": "7743 C",
+            //     "rgb": [68, 105, 61]
+            // },
+            // {
+            //     "name": "New Magnolia Leaves",
+            //     "families": ["greens", "for-review", "campus"],
+            //     "pms": "5545 C",
+            //     "rgb": [67, 105, 91]
+            // },
             {
                 "name": "Spearmint",
                 "families": ["greens", "newly-added"],
@@ -119,7 +134,7 @@
                 "rgb": [99, 153, 174]
             },
             {
-                "name": "Brody Chair",
+                "name": "Sparta/Brody Chair",
                 "families": ["blues", "campus"],
                 "pms": "300 C",
                 "rgb": [0, 94, 184]
@@ -173,7 +188,7 @@
                 "rgb": [142, 58, 128]
             },
             {
-                "name": "Ron/Tricia Pants",
+                "name": "Ron",
                 "families": ["pinks", "newly-added"],
                 "pms": "505 C",
                 "rgb": [111, 44, 63]
@@ -191,6 +206,12 @@
                 "rgb": [232, 146, 124]
             },
             {
+                "name": "New HUT Glass",
+                "families": ["reds", "campus"],
+                "pms": "186 C",
+                "rgb": [200, 16, 46]
+            },
+            {
                 "name": "Barista",
                 "families": ["browns", "bloomberg"],
                 "pms": "732 C",
@@ -198,13 +219,3 @@
                 "bloomberg-rgb": [79, 51, 20]
             }
         ]
-        </script>
-
-        <script src="js/jquery.js"></script>
-        <script src="js/isotope.js"></script>
-        <script src="js/masonry-horizontal.js"></script>
-        <script src="js/rybrgb.js"></script>
-        <script src="js/colorConverter.js"></script>
-        <script src="js/app.js?v=029"></script>
-    </body>
-</html>
