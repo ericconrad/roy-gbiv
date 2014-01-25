@@ -1,4 +1,10 @@
-var $ = jQuery;
+/* global require: false */
+
+var $ = require("jquery");
+var ColorConverter = require("./lib/colorConverter");
+var wheeler = require("./lib/wheeler");
+
+// Set up Roy G Biv
 
 var Roy = function (options) {
     this.options = options;
@@ -128,7 +134,7 @@ Roy.prototype.setshow = function () {
         e.stopPropagation();
 
         $(".hsl-range").remove();
-        r.applyHslRange(r.slideshow, target.data())
+        r.applyHslRange(r.slideshow, target.data());
 
         current.removeClass('show-active');
         target.addClass('show-active');
@@ -151,7 +157,7 @@ Roy.prototype.setshow = function () {
     r.slideshow.find('a.next').on('click', goNext);
     $("body").on('keyup', function (e) {
         
-        if (r.slideshow.css('opacity') == 0) {
+        if (r.slideshow.css('opacity') === 0) {
             return;
         }
 
@@ -164,7 +170,7 @@ Roy.prototype.setshow = function () {
         if (e.keyCode === 27) {
             r.hideshow();
         }
-    })
+    });
     r.slideshow.find('a.prev').on('click', goPrev);
 
     r.slideshow.on('click', '.swatch', function (e) {
@@ -177,7 +183,7 @@ Roy.prototype.setshow = function () {
         console.log('clickity');
         $(this).toggleClass('show');
     });
-}
+};
 
 Roy.prototype.showshow = function (e) {
     var r = this;
@@ -283,8 +289,9 @@ Roy.prototype.applyHslRange = function (container, color) {
 Roy.prototype.getHslValues = function (hsl, increment) {
     var lightness = parseInt(hsl[2], 10) / 100;
     var startingLightness = lightness;
-    var increment = increment / 100;
     var values = [];
+
+    increment = increment / 100;
 
     while (this.shouldHslUp(lightness, increment)) {
         lightness = ((lightness * 1000) + (increment * 1000)) / 1000;
@@ -312,7 +319,7 @@ Roy.prototype.shouldHslDown = function (l, i) {
 
 Roy.prototype.shouldHslUp = function (l, i) {
     return Math.round(l * 100) + Math.round(i * 100) < 100;
-}
+};
 
 Roy.prototype.hslColors = function () {
     var r = this;
@@ -329,24 +336,18 @@ Roy.prototype.hslColors = function () {
 Roy.prototype.getRelatedColors = function (base, options) {
     var r = this;
     var hsl = this.converter.rgbToHsl(base.rgb);
-    var comp;
+    var compared;
     var defaults = {
         n: 3,
         angle: 180
-    }
+    };
 
     options = $.extend(true, {}, defaults, options);
 
-    base.hue = modifyBase(hsl[0]);
-    base.related = base.hue + options.angle;
-    if (base.related > 360) {
-        base.related -= 360;
-    } else if (base.related < 0) {
-        base.related += 360;
-    }
-    base.related = modifyResult(base.related);
+    base.hue = hsl[0];
+    base.related = wheeler.moveGValueOnYWheel(base.hue, options.angle);
 
-    var compared = $.map(r.hslColors(), function (color) {
+    compared = $.map(r.hslColors(), function (color) {
         var both = [color.hsl[0], base.related];
         var max = Math.max.apply(null, both);
         var min = Math.min.apply(null, both);
@@ -469,9 +470,9 @@ $(document).ready(function ($) {
 
 
 window.complement = function (base) {
-    return computeRyb(base, 180);
+    return wheeler.moveGValueOnYWheel(base, 180);
 };
 
 window.triad = function (base) {
-    return [computeRyb(base, 120), computeRyb(base, -120)];
-}
+    return [wheeler.moveGValueOnYWheel(base, 120), wheeler.moveGValueOnYWheel(base, -120)];
+};
