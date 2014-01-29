@@ -2,7 +2,7 @@
   "devDependencies": {
     "browserify-shim": "~3.2.2",
     "gulp-util": "~2.2.12",
-    "gulp": "~3.4.0",
+    "gulp": "3.x.x",
     "gulp-browserify": "~0.3.3",
     "gulp-uglify": "~0.1.0",
     "gulp-rename": "~0.2.2",

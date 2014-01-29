@@ -4,7 +4,7 @@ var $ = require("jquery");
 var ColorConverter = require("./lib/colorConverter");
 var wheeler = require("./lib/wheeler");
 
-// Set up Roy G Biv
+// Set up Roy very such is
 
 var Roy = function (options) {
     this.options = options;

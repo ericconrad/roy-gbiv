@@ -17,7 +17,7 @@ $$ = {
   scripts: {
     all: 'js/**/*.js',
     lint: ['js/**/*.js', '!js/build/**/*.js', '!js/lib/**/*.js'],
-    build: ['js/app.js']
+    build: ['js/app.js', 'js/main.js']
   },
   buildDir: './js/build'
 };
@@ -27,9 +27,7 @@ gulp.task('default', function () {
 });
 
 // Scripts
-gulp.task('scripts', function () {
-
-  gulp.run('jshint');
+gulp.task('scripts', ['jshint'], function () {
 
   return gulp.src($$.scripts.build)
     .pipe(browserify())
@@ -41,10 +39,8 @@ gulp.task('scripts', function () {
     .pipe(notify({ message: 'Scripts browserified, built, and minified' }));
 });
 
-gulp.task('scripts:dev', function () {
-  
-  gulp.run('jshint:dev');
-  
+gulp.task('scripts:dev', ['jshint:dev'], function () {
+    
   return gulp.src($$.scripts.build)
     .pipe(browserify())
     .pipe(gulp.dest($$.buildDir))
@@ -70,9 +66,11 @@ gulp.task('jshint:dev', function () {
 gulp.task('watch', function () {
 
   // Watch scripts
-  gulp.watch($$.scripts.lint, function (e) {
-    gutil.log(e.path + ' was ' + gutil.colors.yellow(e.type));
-    gulp.run('scripts:dev');
+  var w = gulp.watch($$.scripts.lint, ['scripts:dev']);
+
+  // console.log('w', w._watcher);
+  w.on('change', function (e) {
+    gutil.log(e.path + ' ' + gutil.colors.yellow.bold(e.type));
   });
 
 });
