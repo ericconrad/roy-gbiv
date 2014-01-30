@@ -101,9 +101,13 @@ App.Views.ColorWedge = Backbone.View.extend({
     template: getTemplate("colorWedge"),
 
     initialize: function () {
-        vent.on("filter:on", function () {
-
-        });
+        vent.on("filter:state", function (list) {
+            if (list.length === 0 || _.intersection(this.model.get("families"), list).length > 0) {
+                this.$el.removeClass("hidden");
+            } else {
+                this.$el.addClass("hidden");
+            }
+        }, this);
     },
 
     events: {
@@ -157,7 +161,7 @@ App.Collections.FullPalette = Backbone.Collection.extend({
     url: "/colorData.json",
 
     initialize: function () {
-       
+       this.filtersOn = {};
     }
 
 });
@@ -172,9 +176,21 @@ App.Views.ColorWheel = Backbone.View.extend({
     className: "wheel",
 
     initialize: function () {
-        
+
+        vent.on("filter:on", function (name) {
+            this.$el.addClass("filterby-" + name);
+            this.collection.filtersOn[name] = true;
+            vent.trigger("filter:state", _.keys(this.collection.filtersOn));
+        }, this);
+
+        vent.on("filter:off", function (name) {
+            this.$el.removeClass("filterby-" + name);
+            delete(this.collection.filtersOn[name]);
+            vent.trigger("filter:state", _.keys(this.collection.filtersOn));
+        }, this);
+
     },
-    
+
     append: function (color, i) {
         var wedge = new App.Views.ColorWedge({ model: color });
         var rotation = (360 / this.collection.length * (i + 1));
