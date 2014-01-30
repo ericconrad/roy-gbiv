@@ -1,44 +1,21 @@
 /* global require: false */
-/* global $ */
-/* global _ */
-/* global Backbone */
+/* global $: false */
+/* global _: false */
+/* global Backbone: false */
 
 var Backbone = require("backbone");
 var $ = require("jquery");
 var _ = require("underscore");
 var converter = require("./lib/colorConverter");
+var getTemplate = require("./lib/getTemplate");
+var getColorTags = require("./lib/parseColorTags");
+
 var App = {
     Models: {},
     Collections: {},
     Views: {}
 };
-var colorTags;
 var vent = _.extend({}, Backbone.Events);
-
-var getTemplate = function (id) {
-    return _.template($("#" + id).html());
-};
-
-var getColorTags = function (colorData) {
-
-    if (!colorTags) {
-        var uniques = _.unique(_.flatten(_.pluck(colorData, 'families')));
-        var colorRegex = new RegExp("^.*(red|orange|yellow|green|blue|indigo|purple|violet|brown|teal|pink).*$");
-
-        colorTags = { byColor: [], byOther: [] };
-
-        _.each(uniques, function (tag, i) {
-            var tagHash = { name: tag };
-            if (colorRegex.test(tag)) {
-                colorTags.byColor.push(tagHash);
-            } else {
-                colorTags.byOther.push(tagHash);
-            }
-        });
-    }
-
-    return colorTags;
-};
 
 App.Views.Master = Backbone.View.extend({
     el: $("#colorApp"),
