@@ -7,30 +7,17 @@
 var Backbone = require("backbone");
 var $ = require("jquery");
 var _ = require("underscore");
-var converter = require("./lib/colorConverter.js");
+var converter = require("./lib/colorConverter");
 var App = {
     Models: {},
     Collections: {},
     Views: {}
 };
-var colorData, colorTags;
+var colorTags;
 var vent = _.extend({}, Backbone.Events);
 
 var getTemplate = function (id) {
     return _.template($("#" + id).html());
-};
-
-var getColorData = function () {
-    if (!colorData) {
-        colorData = JSON.parse($("#colorData").text()).map(function (color) {
-            color.hsl = converter.rgbToHsl(color.rgb);
-            return color;
-        }).sort(function (a,b) {
-            return a.hsl[0] < b.hsl[0] ? -1 : 1;
-        });
-    }
-
-    return colorData;
 };
 
 var getColorTags = function (colorData) {
@@ -61,10 +48,6 @@ App.Views.Master = Backbone.View.extend({
         var def = {};
         var master = this;
 
-        // append other views here
-        
-
-        var colorData = getColorData();
         var palette = new App.Collections.FullPalette();
         def.palette = palette.fetch();
 
@@ -86,7 +69,24 @@ App.Views.Master = Backbone.View.extend({
 App.Models.Color = Backbone.Model.extend({
 
     parse: function (response) {
-        return response;
+
+        var c = {
+            values: {
+                rgb: response.rgb,
+                hsl: response.hsl || converter.rgbToHsl(response.rgb),
+                hex: response.hex || converter.rgbToHex(response.rgb),
+                cmyk: response.cmyk || converter.rgbToCmyk(response.rgb),
+                pms: response.pms || ""
+            }
+        };
+
+        delete(response.rgb);
+        delete(response.hsl);
+        delete(response.hex);
+        delete(response.cmyk);
+        delete(response.pms);
+
+        return _.extend({}, response, c);
     }
 
 });
@@ -102,9 +102,13 @@ App.Views.ColorWedge = Backbone.View.extend({
     template: getTemplate("colorWedge"),
 
     initialize: function () {
-        vent.on("filter:on", function () {
-
-        });
+        vent.on("filter:state", function (list) {
+            if (list.length === 0 || _.intersection(this.model.get("families"), list).length > 0) {
+                this.$el.removeClass("hidden");
+            } else {
+                this.$el.addClass("hidden");
+            }
+        }, this);
     },
 
     events: {
@@ -158,7 +162,7 @@ App.Collections.FullPalette = Backbone.Collection.extend({
     url: "/colorData.json",
 
     initialize: function () {
-       
+       this.filtersOn = {};
     }
 
 });
@@ -173,12 +177,24 @@ App.Views.ColorWheel = Backbone.View.extend({
     className: "wheel",
 
     initialize: function () {
-        
+
+        vent.on("filter:on", function (name) {
+            this.$el.addClass("filterby-" + name);
+            this.collection.filtersOn[name] = true;
+            vent.trigger("filter:state", _.keys(this.collection.filtersOn));
+        }, this);
+
+        vent.on("filter:off", function (name) {
+            this.$el.removeClass("filterby-" + name);
+            delete(this.collection.filtersOn[name]);
+            vent.trigger("filter:state", _.keys(this.collection.filtersOn));
+        }, this);
+
     },
-    
+
     append: function (color, i) {
         var wedge = new App.Views.ColorWedge({ model: color });
-        var rotation = (360 / getColorData().length * (i + 1));
+        var rotation = (360 / this.collection.length * (i + 1));
         wedge.render().$el.css({
             transform: "rotate(" + rotation + "deg)"
         });
@@ -212,38 +228,118 @@ $(document).ready(function () {
     window.colorApp = new App.Views.Master();
 });
 
-},{"./lib/colorConverter.js":2,"backbone":3,"jquery":4,"underscore":5}],2:[function(require,module,exports){
+},{"./lib/colorConverter":2,"backbone":4,"jquery":5,"underscore":6}],2:[function(require,module,exports){
 /* global module: false */
+/* global require: false */
+
+var RGB = require("./lib/RGB");
 
 var ColorConverter = function (options) { 
     this.options = options;
 };
 
-ColorConverter.prototype.rgbInit = function (rgb) {
-    if (typeof rgb === "string") { rgb = rgb.split(","); }
-    this.rgb = rgb.map(function (val) {
-        return parseInt(val, 10) / 255;
-    });
-    this.max = Math.max.apply(null, this.rgb);
-    this.maxIndex = this.rgb.indexOf(this.max);
-    this.min = Math.min.apply(null, this.rgb);
-    this.range = this.max - this.min;
+ColorConverter.prototype.round = function (floatNum, places) {
+    var places = places || 0;
+    var mult = Math.pow(10, places);
+
+    return Math.round(floatNum * mult) / mult;
 };
 
-ColorConverter.prototype.getHue = function () {
+ColorConverter.prototype.percentify = function (value, places) {
+    return this.round(value * 100, places);
+};
+
+window.conv = new ColorConverter();
+
+ColorConverter.prototype.rgbToHsl = function (rgb) {
+    
+    rgb = new RGB(rgb);
+
+    var hue = rgb.getHslHue();
+    var lightness = rgb.getHslLightness();
+    var saturation = rgb.getHslSaturation(lightness);
+    
+    return [hue, this.percentify(saturation) + "%", this.percentify(lightness) + "%"];
+};
+
+ColorConverter.prototype.rgbToHsv = function (rgb) {
+    
+    rgb = new RGB(rgb);
+
+};
+
+ColorConverter.prototype.rgbToHex = function (rgb) {
+
+    rgb = new RGB(rgb);
+
+    var red = rgb.getHexRed();
+    var green = rgb.getHexGreen();
+    var blue = rgb.getHexBlue();
+
+    return "#" + red + green + blue;
+};
+
+ColorConverter.prototype.rgbToCmyk = function (rgb) {
+
+    rgb = new RGB(rgb);
+
+    var black = rgb.getCmykBlack();
+    var c = this.percentify(rgb.getCmykCyan(black));
+    var m = this.percentify(rgb.getCmykMagenta(black));
+    var y = this.percentify(rgb.getCmykYellow(black));
+    var k = this.percentify(black);
+
+    return [c, m, y, k];
+};
+
+module.exports = new ColorConverter();
+},{"./lib/RGB":3}],3:[function(require,module,exports){
+/* global module: false */
+
+var RGB = function (rgb) {
+
+    if (typeof rgb === "string") { rgb = rgb.split(","); }
+    
+    this.values = rgb;
+    this.ratios = rgb.map(function (val) {
+        return parseInt(val, 10) / 255;
+    });
+    this.max = Math.max.apply(null, this.ratios);
+    this.maxIndex = this.ratios.indexOf(this.max);
+    this.min = Math.min.apply(null, this.ratios);
+    this.range = this.max - this.min;
+
+    this.ratios = {
+        red: this.ratios[0],
+        green: this.ratios[1],
+        blue: this.ratios[2]
+    };
+
+};
+
+/**
+ * HSL Conversion
+ */
+
+RGB.prototype.getHslHue = function () {
+
     var hueprime, hue;
+
     if (this.range === 0) {
         // All values equal, neutral grey has no hue
         hueprime = 0;
+
     } else if (this.maxIndex === 0) {
         // Red is largest
-        hueprime = (this.rgb[1] - this.rgb[2]) / this.range;
+        hueprime = (this.ratios.green - this.ratios.blue) / this.range;
+
     } else if (this.maxIndex === 1) {
         // Green is largest
-        hueprime = ((this.rgb[2] - this.rgb[0]) / this.range) + 2;
+        hueprime = ((this.ratios.blue - this.ratios.red) / this.range) + 2;
+
     } else {
         // Blue is largest
-        hueprime = ((this.rgb[0] - this.rgb[1]) / this.range) + 4;
+        hueprime = ((this.ratios.red - this.ratios.green) / this.range) + 4;
     }
     
     hue = 60 * hueprime;
@@ -255,36 +351,54 @@ ColorConverter.prototype.getHue = function () {
     return Math.round(hue);
 };
 
-ColorConverter.prototype.getHslSaturation = function (lightness) {
+RGB.prototype.getHslSaturation = function (lightness) {
   //1 - abs(2L - 1)
   return this.range / (1 - Math.abs((2 * lightness) - 1));
 };
 
-ColorConverter.prototype.getLightness = function () {
+RGB.prototype.getHslLightness = function () {
   return (this.max + this.min) / 2;
 };
 
-ColorConverter.prototype.percentify = function (value) {
-    return Math.round(value * 100);
+/**
+ * Hexadecimal conversion
+ */
+
+RGB.prototype.getHexRed = function () {
+    return this.values[0].toString(16);
 };
 
-ColorConverter.prototype.rgbToHsl = function (rgb) {
-    var hue, saturation, lightness;
-    this.rgbInit(rgb);
-
-    hue = this.getHue();
-    lightness = this.getLightness();
-    saturation = this.getHslSaturation(lightness);
-    
-    return [hue, this.percentify(saturation) + "%", this.percentify(lightness) + "%"];
+RGB.prototype.getHexGreen = function () {
+    return this.values[1].toString(16);
 };
 
-ColorConverter.prototype.rgbToHsv = function (rgb) {
-    
+RGB.prototype.getHexBlue = function () {
+    return this.values[2].toString(16);
 };
 
-module.exports = new ColorConverter();
-},{}],3:[function(require,module,exports){
+/**
+ * CMYK conversion
+ * Formula source: http://www.rapidtables.com/convert/color/rgb-to-cmyk.htm
+ */
+
+RGB.prototype.getCmykBlack = function () {
+    return 1 - this.max;
+};
+
+RGB.prototype.getCmykCyan = function (k) {
+    return (1 - this.ratios.red - k) / (1 - k);
+};
+
+RGB.prototype.getCmykMagenta = function (k) {
+    return (1 - this.ratios.green - k) / (1 - k);
+};
+
+RGB.prototype.getCmykYellow = function (k) {
+    return (1 - this.ratios.blue - k) / (1 - k);
+};
+
+module.exports = RGB;
+},{}],4:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 
 ; $ = global.$ = require("/Users/jason/vhosts/jhucolor/js/vendor/jquery.js");
@@ -1874,7 +1988,7 @@ _ = global._ = require("/Users/jason/vhosts/jhucolor/js/vendor/underscore-1.5.2.
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{"/Users/jason/vhosts/jhucolor/js/vendor/jquery.js":4,"/Users/jason/vhosts/jhucolor/js/vendor/underscore-1.5.2.js":5,"underscore":5}],4:[function(require,module,exports){
+},{"/Users/jason/vhosts/jhucolor/js/vendor/jquery.js":5,"/Users/jason/vhosts/jhucolor/js/vendor/underscore-1.5.2.js":6,"underscore":6}],5:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*!
  * jQuery JavaScript Library v1.10.2
@@ -11669,7 +11783,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 //     Underscore.js 1.5.2
 //     http://underscorejs.org

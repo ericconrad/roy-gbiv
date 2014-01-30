@@ -477,38 +477,118 @@ window.complement = function (base) {
 window.triad = function (base) {
     return [wheeler.moveGValueOnYWheel(base, 120), wheeler.moveGValueOnYWheel(base, -120)];
 };
-},{"./lib/colorConverter":2,"./lib/wheeler":3,"jquery":4}],2:[function(require,module,exports){
+},{"./lib/colorConverter":2,"./lib/wheeler":4,"jquery":5}],2:[function(require,module,exports){
 /* global module: false */
+/* global require: false */
+
+var RGB = require("./lib/RGB");
 
 var ColorConverter = function (options) { 
     this.options = options;
 };
 
-ColorConverter.prototype.rgbInit = function (rgb) {
-    if (typeof rgb === "string") { rgb = rgb.split(","); }
-    this.rgb = rgb.map(function (val) {
-        return parseInt(val, 10) / 255;
-    });
-    this.max = Math.max.apply(null, this.rgb);
-    this.maxIndex = this.rgb.indexOf(this.max);
-    this.min = Math.min.apply(null, this.rgb);
-    this.range = this.max - this.min;
+ColorConverter.prototype.round = function (floatNum, places) {
+    var places = places || 0;
+    var mult = Math.pow(10, places);
+
+    return Math.round(floatNum * mult) / mult;
 };
 
-ColorConverter.prototype.getHue = function () {
+ColorConverter.prototype.percentify = function (value, places) {
+    return this.round(value * 100, places);
+};
+
+window.conv = new ColorConverter();
+
+ColorConverter.prototype.rgbToHsl = function (rgb) {
+    
+    rgb = new RGB(rgb);
+
+    var hue = rgb.getHslHue();
+    var lightness = rgb.getHslLightness();
+    var saturation = rgb.getHslSaturation(lightness);
+    
+    return [hue, this.percentify(saturation) + "%", this.percentify(lightness) + "%"];
+};
+
+ColorConverter.prototype.rgbToHsv = function (rgb) {
+    
+    rgb = new RGB(rgb);
+
+};
+
+ColorConverter.prototype.rgbToHex = function (rgb) {
+
+    rgb = new RGB(rgb);
+
+    var red = rgb.getHexRed();
+    var green = rgb.getHexGreen();
+    var blue = rgb.getHexBlue();
+
+    return "#" + red + green + blue;
+};
+
+ColorConverter.prototype.rgbToCmyk = function (rgb) {
+
+    rgb = new RGB(rgb);
+
+    var black = rgb.getCmykBlack();
+    var c = this.percentify(rgb.getCmykCyan(black));
+    var m = this.percentify(rgb.getCmykMagenta(black));
+    var y = this.percentify(rgb.getCmykYellow(black));
+    var k = this.percentify(black);
+
+    return [c, m, y, k];
+};
+
+module.exports = new ColorConverter();
+},{"./lib/RGB":3}],3:[function(require,module,exports){
+/* global module: false */
+
+var RGB = function (rgb) {
+
+    if (typeof rgb === "string") { rgb = rgb.split(","); }
+    
+    this.values = rgb;
+    this.ratios = rgb.map(function (val) {
+        return parseInt(val, 10) / 255;
+    });
+    this.max = Math.max.apply(null, this.ratios);
+    this.maxIndex = this.ratios.indexOf(this.max);
+    this.min = Math.min.apply(null, this.ratios);
+    this.range = this.max - this.min;
+
+    this.ratios = {
+        red: this.ratios[0],
+        green: this.ratios[1],
+        blue: this.ratios[2]
+    };
+
+};
+
+/**
+ * HSL Conversion
+ */
+
+RGB.prototype.getHslHue = function () {
+
     var hueprime, hue;
+
     if (this.range === 0) {
         // All values equal, neutral grey has no hue
         hueprime = 0;
+
     } else if (this.maxIndex === 0) {
         // Red is largest
-        hueprime = (this.rgb[1] - this.rgb[2]) / this.range;
+        hueprime = (this.ratios.green - this.ratios.blue) / this.range;
+
     } else if (this.maxIndex === 1) {
         // Green is largest
-        hueprime = ((this.rgb[2] - this.rgb[0]) / this.range) + 2;
+        hueprime = ((this.ratios.blue - this.ratios.red) / this.range) + 2;
+
     } else {
         // Blue is largest
-        hueprime = ((this.rgb[0] - this.rgb[1]) / this.range) + 4;
+        hueprime = ((this.ratios.red - this.ratios.green) / this.range) + 4;
     }
     
     hue = 60 * hueprime;
@@ -520,36 +600,54 @@ ColorConverter.prototype.getHue = function () {
     return Math.round(hue);
 };
 
-ColorConverter.prototype.getHslSaturation = function (lightness) {
+RGB.prototype.getHslSaturation = function (lightness) {
   //1 - abs(2L - 1)
   return this.range / (1 - Math.abs((2 * lightness) - 1));
 };
 
-ColorConverter.prototype.getLightness = function () {
+RGB.prototype.getHslLightness = function () {
   return (this.max + this.min) / 2;
 };
 
-ColorConverter.prototype.percentify = function (value) {
-    return Math.round(value * 100);
+/**
+ * Hexadecimal conversion
+ */
+
+RGB.prototype.getHexRed = function () {
+    return this.values[0].toString(16);
 };
 
-ColorConverter.prototype.rgbToHsl = function (rgb) {
-    var hue, saturation, lightness;
-    this.rgbInit(rgb);
-
-    hue = this.getHue();
-    lightness = this.getLightness();
-    saturation = this.getHslSaturation(lightness);
-    
-    return [hue, this.percentify(saturation) + "%", this.percentify(lightness) + "%"];
+RGB.prototype.getHexGreen = function () {
+    return this.values[1].toString(16);
 };
 
-ColorConverter.prototype.rgbToHsv = function (rgb) {
-    
+RGB.prototype.getHexBlue = function () {
+    return this.values[2].toString(16);
 };
 
-module.exports = new ColorConverter();
-},{}],3:[function(require,module,exports){
+/**
+ * CMYK conversion
+ * Formula source: http://www.rapidtables.com/convert/color/rgb-to-cmyk.htm
+ */
+
+RGB.prototype.getCmykBlack = function () {
+    return 1 - this.max;
+};
+
+RGB.prototype.getCmykCyan = function (k) {
+    return (1 - this.ratios.red - k) / (1 - k);
+};
+
+RGB.prototype.getCmykMagenta = function (k) {
+    return (1 - this.ratios.green - k) / (1 - k);
+};
+
+RGB.prototype.getCmykYellow = function (k) {
+    return (1 - this.ratios.blue - k) / (1 - k);
+};
+
+module.exports = RGB;
+},{}],4:[function(require,module,exports){
 /* global module: false */
 
 module.exports = {
@@ -651,7 +749,7 @@ module.exports = {
     }
 
 };
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*!
  * jQuery JavaScript Library v1.10.2

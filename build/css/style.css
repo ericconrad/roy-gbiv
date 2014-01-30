@@ -155,14 +155,43 @@ body {
 
 div#colorApp {
   position: relative; }
+  div#colorApp .filter-set {
+    position: relative;
+    z-index: 5;
+    width: 300px;
+    float: left;
+    clear: left; }
+  div#colorApp .wheel {
+    position: relative;
+    z-index: 4;
+    padding-left: 350px; }
+    div#colorApp .wheel[class*="filterby-"] .wedge {
+      position: relative;
+      float: left;
+      top: 0;
+      left: 0;
+      margin: 0 15px 15px 0;
+      height: 90px;
+      width: 90px;
+      -webkit-transform: none !important; }
+      div#colorApp .wheel[class*="filterby-"] .wedge .bg {
+        height: 100%;
+        width: 100%;
+        border-radius: 0;
+        -webkit-transform: none; }
+      div#colorApp .wheel[class*="filterby-"] .wedge .name {
+        -webkit-transform: none !important; }
   div#colorApp .wedge {
     position: absolute;
     top: 15%;
     left: 50%;
     margin-left: -25px;
-    -webkit-transform-origin: center 300px; }
+    -webkit-transform-origin: center 300px;
+    -webkit-transition: all 250ms ease-in-out; }
     div#colorApp .wedge:hover {
       z-index: 5; }
+    div#colorApp .wedge.hidden {
+      opacity: 0; }
     div#colorApp .wedge .bg {
       height: 70px;
       width: 45px;
@@ -170,6 +199,7 @@ div#colorApp {
       border-top-left-radius: 50% 3%;
       border-top-right-radius: 50% 3%;
       -webkit-transform: perspective(6em) rotateX(-20deg);
+      -webkit-transition: all 250ms ease-in-out;
       cursor: pointer; }
       div#colorApp .wedge .bg:hover {
         -webkit-transition: all 300ms ease-out;
