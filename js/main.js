@@ -6,7 +6,7 @@
 var Backbone = require("backbone");
 var $ = require("jquery");
 var _ = require("underscore");
-var converter = require("./lib/colorConverter.js");
+var converter = require("./lib/colorConverter");
 var App = {
     Models: {},
     Collections: {},
