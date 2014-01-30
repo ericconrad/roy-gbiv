@@ -8,7 +8,7 @@ var ColorConverter = function (options) {
 };
 
 ColorConverter.prototype.round = function (floatNum, places) {
-    var places = places || 0;
+    places = places || 0;
     var mult = Math.pow(10, places);
 
     return Math.round(floatNum * mult) / mult;
@@ -17,8 +17,6 @@ ColorConverter.prototype.round = function (floatNum, places) {
 ColorConverter.prototype.percentify = function (value, places) {
     return this.round(value * 100, places);
 };
-
-window.conv = new ColorConverter();
 
 ColorConverter.prototype.rgbToHsl = function (rgb) {
     

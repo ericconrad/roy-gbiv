@@ -1,6 +1,5 @@
 /* global require: false */
 /* global module: false */
-/* global _: false */
 
 var _ = require("underscore");
 var tags;
@@ -25,7 +24,7 @@ module.exports = function (data) {
             tags.byOther.push(hash);
 
         }
-        
+
     });
 
     return tags;
