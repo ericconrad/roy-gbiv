@@ -33,10 +33,10 @@ var getColorData = function () {
     return colorData;
 };
 
-var getColorTags = function () {
+var getColorTags = function (colorData) {
 
     if (!colorTags) {
-        var uniques = _.unique(_.flatten(_.pluck(getColorData(), 'families')));
+        var uniques = _.unique(_.flatten(_.pluck(colorData, 'families')));
         var colorRegex = new RegExp("^.*(red|orange|yellow|green|blue|indigo|purple|violet|brown|teal|pink).*$");
 
         colorTags = { byColor: [], byOther: [] };
@@ -58,22 +58,36 @@ App.Views.Master = Backbone.View.extend({
     el: $("#colorApp"),
 
     initialize: function () {
+        var def = {};
+        var master = this;
+
         // append other views here
-        var tags = getColorTags();
-        var filtersByColor = new App.Collections.FilterSet(tags.byColor);
-        var filtersByOther = new App.Collections.FilterSet(tags.byOther);
-        var filtersByColorSet = new App.Views.FilterSet({ collection: filtersByColor });
-        var filtersByOtherSet = new App.Views.FilterSet({ collection: filtersByOther }); 
-        this.$el.append(filtersByColorSet.render().el, filtersByOtherSet.render().el);
+        
 
         var colorData = getColorData();
-        var colors = new App.Collections.FullPalette(colorData);
-        var colorWheel = new App.Views.ColorWheel({ collection: colors });
-        this.$el.append(colorWheel.render().el);
+        var palette = new App.Collections.FullPalette();
+        def.palette = palette.fetch();
+
+        $.when(def.palette).done(function (colorData, status, jqXHR) {
+            var colorWheel = new App.Views.ColorWheel({ collection: palette });
+            
+            var tags = getColorTags(palette.toJSON());
+            var filtersByColor = new App.Collections.FilterSet(tags.byColor);
+            var filtersByOther = new App.Collections.FilterSet(tags.byOther);
+            var filtersByColorSet = new App.Views.FilterSet({ collection: filtersByColor });
+            var filtersByOtherSet = new App.Views.FilterSet({ collection: filtersByOther }); 
+            
+            master.$el.append(filtersByColorSet.render().el, filtersByOtherSet.render().el);
+            master.$el.append(colorWheel.render().el);
+        });
     }
 });
 
 App.Models.Color = Backbone.Model.extend({
+
+    parse: function (response) {
+        return response;
+    }
 
 });
 
@@ -99,7 +113,7 @@ App.Views.ColorWedge = Backbone.View.extend({
 
     openColor: function(e) {
         e.preventDefault();
-        console.log(this.model.get('name'));
+        // console.log(this.model.get('name'));
     },
 
     render: function () {
@@ -120,6 +134,8 @@ App.Views.Filter = Backbone.View.extend({
         e.preventDefault();
         var filterName = this.model.get("name");
 
+        this.$el.toggleClass("active");
+
         if (this.model.get('active')) {
             this.model.set('active', false);
             vent.trigger("filter:off", filterName);
@@ -137,7 +153,14 @@ App.Views.Filter = Backbone.View.extend({
 });
 
 App.Collections.FullPalette = Backbone.Collection.extend({
-    model: App.Models.Color
+
+    model: App.Models.Color,
+    url: "/colorData.json",
+
+    initialize: function () {
+       
+    }
+
 });
 
 App.Collections.FilterSet = Backbone.Collection.extend({
@@ -145,11 +168,14 @@ App.Collections.FilterSet = Backbone.Collection.extend({
 });
 
 App.Views.ColorWheel = Backbone.View.extend({
+
     tagName: "div",
     className: "wheel",
+
     initialize: function () {
         
     },
+    
     append: function (color, i) {
         var wedge = new App.Views.ColorWedge({ model: color });
         var rotation = (360 / getColorData().length * (i + 1));
@@ -184,8 +210,6 @@ App.Views.FilterSet = Backbone.View.extend({
 
 $(document).ready(function () {
     window.colorApp = new App.Views.Master();
-    
-    console.log();
 });
 
 },{"./lib/colorConverter.js":2,"backbone":3,"jquery":4,"underscore":5}],2:[function(require,module,exports){
