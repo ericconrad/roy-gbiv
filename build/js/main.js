@@ -1,45 +1,22 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /* global require: false */
-/* global $ */
-/* global _ */
-/* global Backbone */
+/* global $: false */
+/* global _: false */
+/* global Backbone: false */
 
 var Backbone = require("backbone");
 var $ = require("jquery");
 var _ = require("underscore");
 var converter = require("./lib/colorConverter");
+var getTemplate = require("./lib/getTemplate");
+var getColorTags = require("./lib/parseColorTags");
+
 var App = {
     Models: {},
     Collections: {},
     Views: {}
 };
-var colorTags;
 var vent = _.extend({}, Backbone.Events);
-
-var getTemplate = function (id) {
-    return _.template($("#" + id).html());
-};
-
-var getColorTags = function (colorData) {
-
-    if (!colorTags) {
-        var uniques = _.unique(_.flatten(_.pluck(colorData, 'families')));
-        var colorRegex = new RegExp("^.*(red|orange|yellow|green|blue|indigo|purple|violet|brown|teal|pink).*$");
-
-        colorTags = { byColor: [], byOther: [] };
-
-        _.each(uniques, function (tag, i) {
-            var tagHash = { name: tag };
-            if (colorRegex.test(tag)) {
-                colorTags.byColor.push(tagHash);
-            } else {
-                colorTags.byOther.push(tagHash);
-            }
-        });
-    }
-
-    return colorTags;
-};
 
 App.Views.Master = Backbone.View.extend({
     el: $("#colorApp"),
@@ -228,7 +205,7 @@ $(document).ready(function () {
     window.colorApp = new App.Views.Master();
 });
 
-},{"./lib/colorConverter":2,"backbone":4,"jquery":5,"underscore":6}],2:[function(require,module,exports){
+},{"./lib/colorConverter":2,"./lib/getTemplate":4,"./lib/parseColorTags":5,"backbone":6,"jquery":7,"underscore":8}],2:[function(require,module,exports){
 /* global module: false */
 /* global require: false */
 
@@ -399,6 +376,51 @@ RGB.prototype.getCmykYellow = function (k) {
 
 module.exports = RGB;
 },{}],4:[function(require,module,exports){
+/* global require: false */
+/* global module: false */
+/* global _: false */
+/* global $: false */
+
+var _ = require("underscore");
+var $ = require("jquery");
+
+module.exports = function (id) {
+    return _.template($("#" + id).html());
+};
+},{"jquery":7,"underscore":8}],5:[function(require,module,exports){
+/* global require: false */
+/* global module: false */
+/* global _: false */
+
+var _ = require("underscore");
+var tags;
+
+module.exports = function (data) {
+
+    if (tags) return tags;
+
+    var uniques = _.unique(_.flatten(_.pluck(data, 'families')));
+    var colorRegex = new RegExp("^.*(red|orange|yellow|green|blue|indigo|purple|violet|brown|teal|pink).*$");
+
+    tags = { byColor: [], byOther: [] };
+
+    _.each(uniques, function (tag, i) {
+
+        var hash = { name: tag };
+
+        if (colorRegex.test(tag)) {
+            tags.byColor.push(hash);
+
+        } else {
+            tags.byOther.push(hash);
+
+        }
+        
+    });
+
+    return tags;
+};
+},{"underscore":8}],6:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 
 ; $ = global.$ = require("/Users/jason/vhosts/jhucolor/js/vendor/jquery.js");
@@ -1988,7 +2010,7 @@ _ = global._ = require("/Users/jason/vhosts/jhucolor/js/vendor/underscore-1.5.2.
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{"/Users/jason/vhosts/jhucolor/js/vendor/jquery.js":5,"/Users/jason/vhosts/jhucolor/js/vendor/underscore-1.5.2.js":6,"underscore":6}],5:[function(require,module,exports){
+},{"/Users/jason/vhosts/jhucolor/js/vendor/jquery.js":7,"/Users/jason/vhosts/jhucolor/js/vendor/underscore-1.5.2.js":8,"underscore":8}],7:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*!
  * jQuery JavaScript Library v1.10.2
@@ -11783,7 +11805,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
