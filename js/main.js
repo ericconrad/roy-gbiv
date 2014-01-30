@@ -85,7 +85,24 @@ App.Views.Master = Backbone.View.extend({
 App.Models.Color = Backbone.Model.extend({
 
     parse: function (response) {
-        return response;
+
+        var c = {
+            values: {
+                rgb: response.rgb,
+                hsl: response.hsl || converter.rgbToHsl(response.rgb),
+                hex: response.hex || converter.rgbToHex(response.rgb),
+                cmyk: response.cmyk || converter.rgbToCmyk(response.rgb),
+                pms: response.pms || ""
+            }
+        };
+
+        delete(response.rgb);
+        delete(response.hsl);
+        delete(response.hex);
+        delete(response.cmyk);
+        delete(response.pms);
+
+        return _.extend({}, response, c);
     }
 
 });
