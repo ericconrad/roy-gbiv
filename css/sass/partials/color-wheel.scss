@@ -1,15 +1,61 @@
 div#colorApp {
   position: relative;
 
+  .filter-set {
+    position: relative;
+    z-index: 5;
+    width: 300px;
+    float: left;
+    clear: left;
+  }
+
+  .wheel {
+    position: relative;
+    z-index: 4;
+    padding-left: 350px;
+
+    &[class*="filterby-"] {
+      
+      .wedge {
+        position: relative;
+        float: left;
+        top: 0;
+        left: 0;
+        margin: 0 15px 15px 0;
+        height: 90px;
+        width: 90px;
+        -webkit-transform: none !important;
+
+        .bg {
+          height: 100%;
+          width: 100%;
+          border-radius: 0;
+          -webkit-transform: none;
+        }
+
+        .name {
+          -webkit-transform: none !important;
+
+        }
+      }
+
+    }
+  }
+
   .wedge {
     position: absolute;
     top: 15%;
     left: 50%;
     margin-left: -25px;
     -webkit-transform-origin: center 300px;
+    -webkit-transition: all 250ms ease-in-out;
 
     &:hover {
       z-index: 5;
+    }
+
+    &.hidden {
+      opacity: 0;
     }
 
     .bg {
@@ -22,6 +68,7 @@ div#colorApp {
       //border-bottom-left-radius: 50% 1000000%;
       //border-bottom-right-radius: 50% 1000000%;
       -webkit-transform: perspective(6em) rotateX(-20deg);
+      -webkit-transition: all 250ms ease-in-out;
       cursor: pointer;
 
       &:hover {
