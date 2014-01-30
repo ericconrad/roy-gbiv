@@ -19,18 +19,18 @@ var getTemplate = function (id) {
     return _.template($("#" + id).html());
 };
 
-var getColorData = function () {
-    if (!colorData) {
-        colorData = JSON.parse($("#colorData").text()).map(function (color) {
-            color.hsl = converter.rgbToHsl(color.rgb);
-            return color;
-        }).sort(function (a,b) {
-            return a.hsl[0] < b.hsl[0] ? -1 : 1;
-        });
-    }
+// var getColorData = function () {
+//     if (!colorData) {
+//         colorData = JSON.parse($("#colorData").text()).map(function (color) {
+//             color.hsl = converter.rgbToHsl(color.rgb);
+//             return color;
+//         }).sort(function (a,b) {
+//             return a.hsl[0] < b.hsl[0] ? -1 : 1;
+//         });
+//     }
 
-    return colorData;
-};
+//     return colorData;
+// };
 
 var getColorTags = function (colorData) {
 
@@ -177,7 +177,7 @@ App.Views.ColorWheel = Backbone.View.extend({
     
     append: function (color, i) {
         var wedge = new App.Views.ColorWedge({ model: color });
-        var rotation = (360 / getColorData().length * (i + 1));
+        var rotation = (360 / this.collection.length * (i + 1));
         wedge.render().$el.css({
             transform: "rotate(" + rotation + "deg)"
         });
