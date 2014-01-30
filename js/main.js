@@ -12,25 +12,12 @@ var App = {
     Collections: {},
     Views: {}
 };
-var colorData, colorTags;
+var colorTags;
 var vent = _.extend({}, Backbone.Events);
 
 var getTemplate = function (id) {
     return _.template($("#" + id).html());
 };
-
-// var getColorData = function () {
-//     if (!colorData) {
-//         colorData = JSON.parse($("#colorData").text()).map(function (color) {
-//             color.hsl = converter.rgbToHsl(color.rgb);
-//             return color;
-//         }).sort(function (a,b) {
-//             return a.hsl[0] < b.hsl[0] ? -1 : 1;
-//         });
-//     }
-
-//     return colorData;
-// };
 
 var getColorTags = function (colorData) {
 
@@ -60,10 +47,6 @@ App.Views.Master = Backbone.View.extend({
         var def = {};
         var master = this;
 
-        // append other views here
-        
-
-        var colorData = getColorData();
         var palette = new App.Collections.FullPalette();
         def.palette = palette.fetch();
 
