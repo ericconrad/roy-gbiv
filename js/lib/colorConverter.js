@@ -1,3 +1,5 @@
+/* global module: false */
+
 var ColorConverter = function (options) { 
     this.options = options;
 };
@@ -66,4 +68,4 @@ ColorConverter.prototype.rgbToHsv = function (rgb) {
     
 };
 
-module.exports = ColorConverter;
+module.exports = new ColorConverter();

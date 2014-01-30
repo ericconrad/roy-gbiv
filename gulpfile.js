@@ -1,6 +1,6 @@
 var gulp = require('gulp'),
     gutil = require('gulp-util'),
-    // sass = require('gulp-ruby-sass'),
+    sass = require('gulp-ruby-sass'),
     // autoprefixer = require('gulp-autoprefixer'),
     // minifycss = require('gulp-minify-css'),
     jshint = require('gulp-jshint'),
@@ -16,11 +16,20 @@ var gulp = require('gulp'),
 $$ = {
   scripts: {
     all: 'js/**/*.js',
-    lint: ['js/**/*.js', '!js/build/**/*.js', '!js/lib/**/*.js'],
+    lint: ['js/**/*.js', '!js/vendor/**/*.js'],
     build: ['js/app.js', 'js/main.js']
   },
-  buildDir: './js/build'
+  styles: {
+    all: ['css/**/*.sass', 'css/**/*.scss', 'css/**/*.css'],
+    build: ['css/sass/*.sass', 'css/sass/*.scss']
+  },
+  buildDir: {
+    root: "./build"
+  }
 };
+
+$$.buildDir.js = $$.buildDir.root + "/js";
+$$.buildDir.css = $$.buildDir.root + "/css";
 
 gulp.task('default', function () {
   console.log("Try these: ");
@@ -31,10 +40,10 @@ gulp.task('scripts', ['jshint'], function () {
 
   return gulp.src($$.scripts.build)
     .pipe(browserify())
-    .pipe(gulp.dest($$.buildDir))
+    .pipe(gulp.dest($$.buildDir.js))
     .pipe(rename({ suffix: '.min' }))
     .pipe(uglify())
-    .pipe(gulp.dest($$.buildDir))
+    .pipe(gulp.dest($$.buildDir.js))
     
     .pipe(notify({ message: 'Scripts browserified, built, and minified' }));
 });
@@ -43,7 +52,7 @@ gulp.task('scripts:dev', ['jshint:dev'], function () {
     
   return gulp.src($$.scripts.build)
     .pipe(browserify())
-    .pipe(gulp.dest($$.buildDir))
+    .pipe(gulp.dest($$.buildDir.js))
 
     .pipe(notify({ message: 'Scripts browserified and built in DEV mode' }));
 });
@@ -51,26 +60,42 @@ gulp.task('scripts:dev', ['jshint:dev'], function () {
 gulp.task('jshint', function () {
   return gulp.src($$.scripts.lint)
     .pipe(jshint('.jshintrc'))
-    .pipe(jshint.reporter('default'));
+    .pipe(jshint.reporter('default'))
+
+    .pipe(notify({ message: 'JSHint complete' }));
 });
 
 gulp.task('jshint:dev', function () {
   return gulp.src($$.scripts.lint)
     .pipe(jshint('.jshintrc-dev'))
-    .pipe(jshint.reporter('default'));
+    .pipe(jshint.reporter('default'))
+
+    .pipe(notify({ message: 'JSHint complete' }));
+});
+
+gulp.task('styles:dev', function () {
+  return gulp.src($$.styles.build)
+    .pipe(sass())
+    .pipe(gulp.dest($$.buildDir.css))
+
+    .pipe(notify({ message: "Sass files compiled in DEV mode" }));
 });
 
 /**
  * Watch mode runs all of the dev tasks
  */
-gulp.task('watch', function () {
+gulp.task('watch', ['scripts:dev', 'styles:dev'], function () {
 
   // Watch scripts
-  var w = gulp.watch($$.scripts.lint, ['scripts:dev']);
+  var scripts = gulp.watch($$.scripts.lint, ['scripts:dev']);
 
-  // console.log('w', w._watcher);
-  w.on('change', function (e) {
+  // Watch styles
+  var styles = gulp.watch($$.styles.all, ['styles:dev']);
+  
+  var changeLog = function (e) {
     gutil.log(e.path + ' ' + gutil.colors.yellow.bold(e.type));
-  });
+  };
+
+  scripts.on('change', changeLog);
 
 });
