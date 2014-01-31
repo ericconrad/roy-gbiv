@@ -1,0 +1,24 @@
+{
+  "name": "colorConverter",
+  "version": "0.0.0",
+  "description": "Converts color value mixes from one to another",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": "",
+  "keywords": [
+    "color",
+    "conversion",
+    "rgb",
+    "hsl",
+    "cmyk",
+    "hexadecimal",
+    "hex"
+  ],
+  "author": "Jason Rhodes",
+  "license": "MIT"
+}

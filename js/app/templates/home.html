@@ -1,0 +1,6 @@
+<h1><%= pageTitle %></h1>
+<ul class="nav">
+<% _.each(links, function (link, i) { %>
+    <li><a href="<%= link.target %>"><%= link.text %></a></li>
+<% }); %>
+</ul>

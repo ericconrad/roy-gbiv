@@ -1,20 +1,24 @@
-/* global require */
-/* global $ */
-/* global _ */
-/* global Backbone */
+/* global require: false */
+/* global vent: true */
 
-var Backbone = require("backbone");
-var $ = require("jquery");
-var _ = require("underscore");
+var Backbone = require("backbone"),
+    $ = require("./vendor/jquery"),
+    _ = require("underscore");
 
-var App = Backbone.View.extend({
-    id: "container",
+Backbone.$ = $;
 
-    initialize: function () {
-        console.log('initializing');
-        this.render().$el.append($('<p>').text('An app emerges...'));
-    }
+var AppRouter = require("./app/Router");
+
+/* Global event pub/sub object */
+vent = _.extend({}, Backbone.Events);
+
+
+/**
+ * Application init
+ * 
+ */
+
+$(document).ready(function () {
+    new AppRouter();
+    Backbone.history.start();
 });
-
-var colorApp = new App();
-// colorApp.render().
