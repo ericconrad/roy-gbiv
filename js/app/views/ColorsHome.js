@@ -32,6 +32,7 @@ module.exports = Backbone.View.extend({
     initialize: function () {
         var def = {};
         var master = this;
+        var div = $("<div>");
 
         var palette = new Collections.Palette();
         def.palette = palette.fetch();
@@ -47,8 +48,10 @@ module.exports = Backbone.View.extend({
             var colorSet = new Views.FilterSet({ collection: filtersByColor });
             var otherSet = new Views.FilterSet({ collection: filtersByOther }); 
             
-            master.$el.append(colorSet.render().el, otherSet.render().el);
-            master.$el.append(wheel.render().el);
+            div.append(colorSet.render().el, otherSet.render().el)
+                .append(wheel.render().el);
+
+            master.$el.html(div);
         });
     }
 

@@ -20,7 +20,7 @@ module.exports = Backbone.View.extend({
     events: {
         "click a": function (e) {
             e.preventDefault();
-            console.log($(e.currentTarget).attr('href'));
+            this.attributes.router.navigate($(e.currentTarget).attr('href'), { trigger: true });
         }
     },
 

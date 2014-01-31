@@ -26,7 +26,7 @@ module.exports = Backbone.Router.extend({
     },
 
     home: function () {
-        new Views.Home();
+        new Views.Home({ attributes: { router: this }} );
     },
 
     colorsHome: function () {
@@ -325,6 +325,7 @@ module.exports = Backbone.View.extend({
     initialize: function () {
         var def = {};
         var master = this;
+        var div = $("<div>");
 
         var palette = new Collections.Palette();
         def.palette = palette.fetch();
@@ -340,8 +341,10 @@ module.exports = Backbone.View.extend({
             var colorSet = new Views.FilterSet({ collection: filtersByColor });
             var otherSet = new Views.FilterSet({ collection: filtersByOther }); 
             
-            master.$el.append(colorSet.render().el, otherSet.render().el);
-            master.$el.append(wheel.render().el);
+            div.append(colorSet.render().el, otherSet.render().el)
+                .append(wheel.render().el);
+
+            master.$el.html(div);
         });
     }
 
@@ -373,12 +376,13 @@ module.exports = Backbone.View.extend({
     template: getTemplate("colorFilter"),
 
     events: {
-        "click": "toggleFilter"
+        "click a": "toggleFilter"
     },
 
     toggleFilter: function (e) {
 
         e.preventDefault();
+
         var filterName = this.model.get("name");
 
         this.$el.toggleClass("active");
@@ -393,6 +397,7 @@ module.exports = Backbone.View.extend({
 
         }
 
+        return false;
     },
 
     render: function () {
@@ -463,7 +468,7 @@ module.exports = Backbone.View.extend({
     events: {
         "click a": function (e) {
             e.preventDefault();
-            console.log($(e.currentTarget).attr('href'));
+            this.attributes.router.navigate($(e.currentTarget).attr('href'), { trigger: true });
         }
     },
 

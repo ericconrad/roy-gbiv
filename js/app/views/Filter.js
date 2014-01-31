@@ -24,12 +24,13 @@ module.exports = Backbone.View.extend({
     template: getTemplate("colorFilter"),
 
     events: {
-        "click": "toggleFilter"
+        "click a": "toggleFilter"
     },
 
     toggleFilter: function (e) {
 
         e.preventDefault();
+
         var filterName = this.model.get("name");
 
         this.$el.toggleClass("active");
@@ -44,6 +45,7 @@ module.exports = Backbone.View.extend({
 
         }
 
+        return false;
     },
 
     render: function () {
