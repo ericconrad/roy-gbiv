@@ -556,7 +556,7 @@ vent = _.extend({}, Backbone.Events);
 
 $(document).ready(function () {
     new AppRouter();
-    Backbone.history.start();
+    Backbone.history.start({ root: "/roy-gbiv/" });
 });
 },{"./app/Router":1,"./vendor/jquery":19,"backbone":20,"underscore":21}],16:[function(require,module,exports){
 /* global module: false */
