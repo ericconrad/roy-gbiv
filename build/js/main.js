@@ -38,7 +38,7 @@ module.exports = Backbone.Router.extend({
     }
 
 });
-},{"../vendor/jquery":17,"./views/ColorsHome":8,"./views/Home":11,"backbone":18}],2:[function(require,module,exports){
+},{"../vendor/jquery":19,"./views/ColorsHome":11,"./views/Home":14,"backbone":20}],2:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -60,7 +60,7 @@ var Models = { Filter: require("../models/Filter") };
 module.exports = Backbone.Collection.extend({
     model: Models.Filter
 });
-},{"../../vendor/jquery":17,"../models/Filter":5,"backbone":18}],3:[function(require,module,exports){
+},{"../../vendor/jquery":19,"../models/Filter":5,"backbone":20}],3:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -90,7 +90,7 @@ module.exports = Backbone.Collection.extend({
     }
 
 });
-},{"../../vendor/jquery":17,"../models/Color":4,"backbone":18}],4:[function(require,module,exports){
+},{"../../vendor/jquery":19,"../models/Color":4,"backbone":20}],4:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -136,7 +136,7 @@ module.exports = Backbone.Model.extend({
     }
 
 });
-},{"../../lib/colorConverter":13,"../../vendor/jquery":17,"backbone":18,"underscore":19}],5:[function(require,module,exports){
+},{"../../lib/colorConverter":16,"../../vendor/jquery":19,"backbone":20,"underscore":21}],5:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -158,7 +158,53 @@ Backbone.$ = $;
 module.exports = Backbone.Model.extend({
     defaults: { active: false }
 });
-},{"../../vendor/jquery":17,"backbone":18}],6:[function(require,module,exports){
+},{"../../vendor/jquery":19,"backbone":20}],6:[function(require,module,exports){
+_ = require('underscore');
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<a href="#">'+
+((__t=( name ))==null?'':__t)+
+'</a>';
+}
+return __p;
+};
+
+},{"underscore":21}],7:[function(require,module,exports){
+_ = require('underscore');
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class=\'bg\' style="background-color: rgb('+
+((__t=( color.values.rgb.join(',') ))==null?'':__t)+
+');">\n</div>\n<span class="name">'+
+((__t=( color.name ))==null?'':__t)+
+'</span>';
+}
+return __p;
+};
+
+},{"underscore":21}],8:[function(require,module,exports){
+_ = require('underscore');
+module.exports = function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<h1>'+
+((__t=( pageTitle ))==null?'':__t)+
+'</h1>\n<ul class="nav">\n';
+ _.each(links, function (link, i) { 
+__p+='\n    <li><a href="'+
+((__t=( link.target ))==null?'':__t)+
+'">'+
+((__t=( link.text ))==null?'':__t)+
+'</a></li>\n';
+ }); 
+__p+='\n</ul>';
+}
+return __p;
+};
+
+},{"underscore":21}],9:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 /* global vent: false */
@@ -169,7 +215,7 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var getTemplate = require("../../lib/getTemplate");
+var templates = { colorWedge: require("../templates/color-wedge.html") };
 
 /**
  * Views.ColorWedge
@@ -184,7 +230,7 @@ module.exports = Backbone.View.extend({
 
     tagName: "div",
     className: "wedge",
-    template: getTemplate("colorWedge"),
+    template: templates.colorWedge,
 
     initialize: function () {
 
@@ -217,7 +263,7 @@ module.exports = Backbone.View.extend({
         return this;
     }
 });
-},{"../../lib/getTemplate":15,"../../vendor/jquery":17,"backbone":18,"underscore":19}],7:[function(require,module,exports){
+},{"../../vendor/jquery":19,"../templates/color-wedge.html":7,"backbone":20,"underscore":21}],10:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 /* global vent: false */
@@ -290,7 +336,7 @@ module.exports = Backbone.View.extend({
         return this;
     }
 });
-},{"../../vendor/jquery":17,"./ColorWedge":6,"backbone":18,"underscore":19}],8:[function(require,module,exports){
+},{"../../vendor/jquery":19,"./ColorWedge":9,"backbone":20,"underscore":21}],11:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -349,7 +395,7 @@ module.exports = Backbone.View.extend({
     }
 
 });
-},{"../../lib/parseColorTags":16,"../../vendor/jquery":17,"../collections/FilterSet":2,"../collections/Palette":3,"./ColorWheel":7,"./FilterSet":10,"backbone":18}],9:[function(require,module,exports){
+},{"../../lib/parseColorTags":18,"../../vendor/jquery":19,"../collections/FilterSet":2,"../collections/Palette":3,"./ColorWheel":10,"./FilterSet":13,"backbone":20}],12:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 /* global vent: false */
@@ -359,7 +405,7 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var getTemplate = require("../../lib/getTemplate");
+var templates = { colorFilter: require("../templates/color-filter.html") };
 
 /**
  * Views.Filter
@@ -373,7 +419,7 @@ var getTemplate = require("../../lib/getTemplate");
 module.exports = Backbone.View.extend({
 
     tagName: "li",
-    template: getTemplate("colorFilter"),
+    template: templates.colorFilter,
 
     events: {
         "click a": "toggleFilter"
@@ -407,7 +453,7 @@ module.exports = Backbone.View.extend({
         return this;
     }
 });
-},{"../../lib/getTemplate":15,"../../vendor/jquery":17,"backbone":18}],10:[function(require,module,exports){
+},{"../../vendor/jquery":19,"../templates/color-filter.html":6,"backbone":20}],13:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -445,7 +491,7 @@ module.exports = Backbone.View.extend({
     }
 
 });
-},{"../../vendor/jquery":17,"./Filter":9,"backbone":18}],11:[function(require,module,exports){
+},{"../../vendor/jquery":19,"./Filter":12,"backbone":20}],14:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -454,12 +500,14 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var getTemplate = require("../../lib/getTemplate");
+// var getTemplate = require("../../lib/getTemplate");
+
+var templates = { home: require("../templates/home.html" ) };
 
 module.exports = Backbone.View.extend({
 
     el: $("#BrandApp"),
-    template: getTemplate("templateHome"),
+    template: templates.home,
 
     initialize: function () {
         this.render();
@@ -485,7 +533,7 @@ module.exports = Backbone.View.extend({
     }
 
 });
-},{"../../lib/getTemplate":15,"../../vendor/jquery":17,"backbone":18}],12:[function(require,module,exports){
+},{"../../vendor/jquery":19,"../templates/home.html":8,"backbone":20}],15:[function(require,module,exports){
 /* global require: false */
 /* global vent: true */
 
@@ -511,7 +559,7 @@ $(document).ready(function () {
     Backbone.history.start();
 });
 
-},{"./app/Router":1,"./vendor/jquery":17,"backbone":18,"underscore":19}],13:[function(require,module,exports){
+},{"./app/Router":1,"./vendor/jquery":19,"backbone":20,"underscore":21}],16:[function(require,module,exports){
 /* global module: false */
 /* global require: false */
 
@@ -574,7 +622,7 @@ ColorConverter.prototype.rgbToCmyk = function (rgb) {
 };
 
 module.exports = new ColorConverter();
-},{"./lib/RGB":14}],14:[function(require,module,exports){
+},{"./lib/RGB":17}],17:[function(require,module,exports){
 /* global module: false */
 
 var RGB = function (rgb) {
@@ -679,17 +727,7 @@ RGB.prototype.getCmykYellow = function (k) {
 };
 
 module.exports = RGB;
-},{}],15:[function(require,module,exports){
-/* global require: false */
-/* global module: false */
-
-var _ = require("underscore");
-var $ = require("../vendor/jquery");
-
-module.exports = function (id) {
-    return _.template($("#" + id).html());
-};
-},{"../vendor/jquery":17,"underscore":19}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -721,7 +759,7 @@ module.exports = function (data) {
 
     return tags;
 };
-},{"underscore":19}],17:[function(require,module,exports){
+},{"underscore":21}],19:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v1.10.2
  * http://jquery.com/
@@ -10511,7 +10549,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 }
 
 })( window );
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 //     Backbone.js 1.1.0
 
 //     (c) 2010-2011 Jeremy Ashkenas, DocumentCloud Inc.
@@ -12094,7 +12132,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }).call(this);
 
-},{"underscore":19}],19:[function(require,module,exports){
+},{"underscore":21}],21:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -13372,4 +13410,4 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }).call(this);
 
-},{}]},{},[12])
+},{}]},{},[15])

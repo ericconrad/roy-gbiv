@@ -6,12 +6,14 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var getTemplate = require("../../lib/getTemplate");
+// var getTemplate = require("../../lib/getTemplate");
+
+var templates = { home: require("../templates/home.html" ) };
 
 module.exports = Backbone.View.extend({
 
     el: $("#BrandApp"),
-    template: getTemplate("templateHome"),
+    template: templates.home,
 
     initialize: function () {
         this.render();

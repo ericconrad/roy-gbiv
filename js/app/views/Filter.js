@@ -7,7 +7,7 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var getTemplate = require("../../lib/getTemplate");
+var templates = { colorFilter: require("../templates/color-filter.html") };
 
 /**
  * Views.Filter
@@ -21,7 +21,7 @@ var getTemplate = require("../../lib/getTemplate");
 module.exports = Backbone.View.extend({
 
     tagName: "li",
-    template: getTemplate("colorFilter"),
+    template: templates.colorFilter,
 
     events: {
         "click a": "toggleFilter"

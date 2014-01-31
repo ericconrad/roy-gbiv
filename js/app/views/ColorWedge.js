@@ -8,7 +8,7 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var getTemplate = require("../../lib/getTemplate");
+var templates = { colorWedge: require("../templates/color-wedge.html") };
 
 /**
  * Views.ColorWedge
@@ -23,7 +23,7 @@ module.exports = Backbone.View.extend({
 
     tagName: "div",
     className: "wedge",
-    template: getTemplate("colorWedge"),
+    template: templates.colorWedge,
 
     initialize: function () {
 
