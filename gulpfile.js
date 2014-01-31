@@ -6,79 +6,80 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
-    // clean = require('gulp-clean'),
-    // concat = require('gulp-concat'),
     browserify = require('gulp-browserify'),
     notify = require('gulp-notify'),
     $$ = {};
 
-// Set up some constants
+// Set up some constants for config
 $$ = {
-  scripts: {
-    all: 'js/**/*.js',
-    lint: ['js/**/*.js', '!js/vendor/**/*.js'],
-    build: ['js/app.js', 'js/main.js']
-  },
-  styles: {
-    all: ['css/**/*.sass', 'css/**/*.scss', 'css/**/*.css'],
-    build: ['css/sass/*.sass', 'css/sass/*.scss']
-  },
-  buildDir: {
-    root: "./build"
-  }
+    scripts: {
+        all: 'js/**/*.js',
+        lint: ['js/**/*.js', '!js/vendor/**/*.js'],
+        watch: ['js/**/*.js', 'js/app/templates/**/*.html', '!js/vendor/**/*.js'],
+        build: ['js/app.js', 'js/main.js']
+    },
+    styles: {
+        all: ['css/**/*.sass', 'css/**/*.scss', 'css/**/*.css'],
+        build: ['css/sass/*.sass', 'css/sass/*.scss']
+    },
+    buildDir: {
+        root: "./build"
+    }
 };
 
 $$.buildDir.js = $$.buildDir.root + "/js";
 $$.buildDir.css = $$.buildDir.root + "/css";
 
 gulp.task('default', function () {
-  console.log("Try these: ");
+    console.log("We should think about making this the production build?");
 });
 
 // Scripts
 gulp.task('scripts', ['jshint'], function () {
 
-  return gulp.src($$.scripts.build)
-    .pipe(browserify())
-    .pipe(gulp.dest($$.buildDir.js))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(uglify())
-    .pipe(gulp.dest($$.buildDir.js))
-    
-    .pipe(notify({ message: 'Scripts browserified, built, and minified' }));
+    return gulp.src($$.scripts.build)
+        .pipe(browserify())
+        .pipe(gulp.dest($$.buildDir.js))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(uglify())
+        .pipe(gulp.dest($$.buildDir.js))
+        
+        .pipe(notify({ message: 'Scripts browserified, built, and minified' }));
 });
 
 gulp.task('scripts:dev', ['jshint:dev'], function () {
-    
-  return gulp.src($$.scripts.build)
-    .pipe(browserify())
-    .pipe(gulp.dest($$.buildDir.js))
+        
+    return gulp.src($$.scripts.build)
+        .pipe(browserify({
+            transform: ["node-underscorify"]
+        }))
+        .pipe(gulp.dest($$.buildDir.js))
 
-    .pipe(notify({ message: 'Scripts browserified and built in DEV mode' }));
+        .pipe(notify({ message: 'Scripts browserified and built in DEV mode' }));
 });
 
 gulp.task('jshint', function () {
-  return gulp.src($$.scripts.lint)
-    .pipe(jshint('.jshintrc'))
-    .pipe(jshint.reporter('default'))
+    return gulp.src($$.scripts.lint)
+        .pipe(jshint('.jshintrc'))
+        .pipe(jshint.reporter('default'))
 
-    .pipe(notify({ message: 'JSHint complete' }));
+        .pipe(notify({ message: 'JSHint complete' }));
 });
 
 gulp.task('jshint:dev', function () {
-  return gulp.src($$.scripts.lint)
-    .pipe(jshint('.jshintrc-dev'))
-    .pipe(jshint.reporter('default'))
+    return gulp.src($$.scripts.lint)
+        .pipe(jshint('.jshintrc-dev'))
+        .pipe(jshint.reporter('default'))
 
-    .pipe(notify({ message: 'JSHint complete' }));
+        .pipe(notify({ message: 'JSHint complete' }));
 });
 
 gulp.task('styles:dev', function () {
-  return gulp.src($$.styles.build)
-    .pipe(sass())
-    .pipe(gulp.dest($$.buildDir.css))
+    return gulp.src($$.styles.build)
+        .pipe(sass())
+        .pipe(gulp.dest($$.buildDir.css))
 
-    .pipe(notify({ message: "Sass files compiled in DEV mode" }));
+        .pipe(notify({ message: "Sass files compiled in DEV mode" }));
 });
 
 /**
@@ -86,16 +87,16 @@ gulp.task('styles:dev', function () {
  */
 gulp.task('watch', ['scripts:dev', 'styles:dev'], function () {
 
-  // Watch scripts
-  var scripts = gulp.watch($$.scripts.lint, ['scripts:dev']);
+    // Watch scripts
+    var scripts = gulp.watch($$.scripts.watch, ['scripts:dev']);
 
-  // Watch styles
-  var styles = gulp.watch($$.styles.all, ['styles:dev']);
-  
-  var changeLog = function (e) {
-    gutil.log(e.path + ' ' + gutil.colors.yellow.bold(e.type));
-  };
+    // Watch styles
+    var styles = gulp.watch($$.styles.all, ['styles:dev']);
+    
+    var changeLog = function (e) {
+        gutil.log(e.path + ' ' + gutil.colors.yellow.bold(e.type));
+    };
 
-  scripts.on('change', changeLog);
+    scripts.on('change', changeLog);
 
 });
