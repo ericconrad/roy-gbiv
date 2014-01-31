@@ -20,5 +20,5 @@ vent = _.extend({}, Backbone.Events);
 
 $(document).ready(function () {
     new AppRouter();
-    Backbone.history.start();
+    Backbone.history.start({ root: "/roy-gbiv/" });
 });
