@@ -1,15 +1,13 @@
 /* global require: false */
-/* global vent: false */
+/* global vent: true */
 
-var Backbone = require("backbone");
-var $ = require("./vendor/jquery");
-var _ = require("underscore");
+var Backbone = require("backbone"),
+    $ = require("./vendor/jquery"),
+    _ = require("underscore");
 
 Backbone.$ = $;
 
-var Views = {
-    Master: require("./app/views/Master")
-};
+var AppRouter = require("./app/Router");
 
 /* Global event pub/sub object */
 vent = _.extend({}, Backbone.Events);
@@ -21,5 +19,6 @@ vent = _.extend({}, Backbone.Events);
  */
 
 $(document).ready(function () {
-    new Views.Master();
+    new AppRouter();
+    Backbone.history.start();
 });

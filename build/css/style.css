@@ -153,19 +153,20 @@ body {
         bottom: 3px;
         left: 2px; }
 
-div#colorApp {
+div#BrandApp {
   position: relative; }
-  div#colorApp .filter-set {
+  div#BrandApp .filter-set {
     position: relative;
     z-index: 5;
-    width: 300px;
+    width: 150px;
     float: left;
     clear: left; }
-  div#colorApp .wheel {
+  div#BrandApp .wheel {
     position: relative;
     z-index: 4;
-    padding-left: 350px; }
-    div#colorApp .wheel[class*="filterby-"] .wedge {
+    padding-left: 200px;
+    margin-top: 50px; }
+    div#BrandApp .wheel[class*="filterby-"] .wedge {
       position: relative;
       float: left;
       top: 0;
@@ -174,25 +175,25 @@ div#colorApp {
       height: 90px;
       width: 90px;
       -webkit-transform: none !important; }
-      div#colorApp .wheel[class*="filterby-"] .wedge .bg {
+      div#BrandApp .wheel[class*="filterby-"] .wedge .bg {
         height: 100%;
         width: 100%;
         border-radius: 0;
         -webkit-transform: none; }
-      div#colorApp .wheel[class*="filterby-"] .wedge .name {
+      div#BrandApp .wheel[class*="filterby-"] .wedge .name {
         -webkit-transform: none !important; }
-  div#colorApp .wedge {
+  div#BrandApp .wedge {
     position: absolute;
-    top: 15%;
+    top: 25%;
     left: 50%;
     margin-left: -25px;
     -webkit-transform-origin: center 300px;
     -webkit-transition: all 250ms ease-in-out; }
-    div#colorApp .wedge:hover {
+    div#BrandApp .wedge:hover {
       z-index: 5; }
-    div#colorApp .wedge.hidden {
+    div#BrandApp .wedge.hidden {
       opacity: 0; }
-    div#colorApp .wedge .bg {
+    div#BrandApp .wedge .bg {
       height: 70px;
       width: 45px;
       padding: 5px;
@@ -201,12 +202,12 @@ div#colorApp {
       -webkit-transform: perspective(6em) rotateX(-20deg);
       -webkit-transition: all 250ms ease-in-out;
       cursor: pointer; }
-      div#colorApp .wedge .bg:hover {
+      div#BrandApp .wedge .bg:hover {
         -webkit-transition: all 300ms ease-out;
         -webkit-transform: scale(1.8) perspective(6em) rotateX(-20deg); }
-        div#colorApp .wedge .bg:hover span {
+        div#BrandApp .wedge .bg:hover span {
           opacity: 1; }
-    div#colorApp .wedge .name {
+    div#BrandApp .wedge .name {
       -webkit-transition: all 300ms ease-out;
       opacity: 0;
       font-family: Gentona, "Myriad Pro", helvetica;
@@ -218,5 +219,5 @@ div#colorApp {
       position: absolute;
       bottom: -120px;
       color: #333; }
-    div#colorApp .wedge:hover .name {
+    div#BrandApp .wedge:hover .name {
       opacity: 1; }

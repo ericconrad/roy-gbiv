@@ -1,14 +1,13 @@
 /* global require: false */
 /* global module: false */
-/* global vent: false */
 
-var $ = require("../vendor/jquery"),
+var $ = require("../../vendor/jquery"),
     _ = require("underscore"),
     Backbone = require("backbone");
 
 Backbone.$ = $;
 
-var converter = require("../lib/colorConverter");
+var converter = require("../../lib/colorConverter");
 
 /**
  * Models.Color
@@ -20,7 +19,7 @@ var converter = require("../lib/colorConverter");
  * 
  */
 
-module.exports.Color = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
     parse: function (response) {
 
@@ -43,18 +42,4 @@ module.exports.Color = Backbone.Model.extend({
         return _.extend({}, response, c);
     }
 
-});
-
-
-/**
- * Models.Filter
- *
- * @views Filter
- *
- * @property name
- * 
- */
-
-module.exports.Filter = Backbone.Model.extend({
-    defaults: { active: false }
 });

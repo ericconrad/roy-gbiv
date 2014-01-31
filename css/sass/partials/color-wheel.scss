@@ -1,10 +1,10 @@
-div#colorApp {
+div#BrandApp {
   position: relative;
 
   .filter-set {
     position: relative;
     z-index: 5;
-    width: 300px;
+    width: 150px;
     float: left;
     clear: left;
   }
@@ -12,7 +12,8 @@ div#colorApp {
   .wheel {
     position: relative;
     z-index: 4;
-    padding-left: 350px;
+    padding-left: 200px;
+    margin-top: 50px;
 
     &[class*="filterby-"] {
       
@@ -44,7 +45,7 @@ div#colorApp {
 
   .wedge {
     position: absolute;
-    top: 15%;
+    top: 25%;
     left: 50%;
     margin-left: -25px;
     -webkit-transform-origin: center 300px;

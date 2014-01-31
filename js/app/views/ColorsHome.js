@@ -6,31 +6,34 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var Collections = require("../Collections"),
+var Collections = {
+        Palette: require("../collections/Palette"),
+        FilterSet: require("../collections/FilterSet")
+    },
     Views = {
-        FilterSet: require("./FilterSet"),
-        ColorWheel: require("./ColorWheel")
+        ColorWheel: require("./ColorWheel"),
+        FilterSet: require("./FilterSet")
     };
     
 var getColorTags = require("../../lib/parseColorTags");
 
 /**
- * Views.Master
+ * Views.ColorsHome
  *
  * @expects None
  *
- * Master view to rule all others
+ * Master view for /colors page
  */
 
 module.exports = Backbone.View.extend({
 
-    el: $("#colorApp"),
+    el: $("#BrandApp"),
 
     initialize: function () {
         var def = {};
         var master = this;
 
-        var palette = new Collections.FullPalette();
+        var palette = new Collections.Palette();
         def.palette = palette.fetch();
 
         $.when(def.palette).done(function (colorData, status, jqXHR) {

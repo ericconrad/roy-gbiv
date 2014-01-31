@@ -1,23 +1,86 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
-/* global vent: false */
 
 var $ = require("../vendor/jquery"),
-    _ = require("underscore"),
     Backbone = require("backbone");
 
 Backbone.$ = $;
 
-var Models = require("./Models");
+var Views = { 
+    Home: require("./views/Home"),
+    ColorsHome: require("./views/ColorsHome") 
+};
+
+/**
+ * Main Application Router
+ * 
+ */
+
+module.exports = Backbone.Router.extend({
+
+    routes: {
+        "": "home",
+        "colors": "colorsHome",
+        "colors/:name": "colorInfo"
+    },
+
+    home: function () {
+        new Views.Home();
+    },
+
+    colorsHome: function () {
+        new Views.ColorsHome();
+    },
+
+    colorInfo: function (name) {
+
+    }
+
+});
+},{"../vendor/jquery":17,"./views/ColorsHome":8,"./views/Home":11,"backbone":18}],2:[function(require,module,exports){
+/* global require: false */
+/* global module: false */
+
+var $ = require("../../vendor/jquery"),
+    Backbone = require("backbone");
+
+Backbone.$ = $;
+
+var Models = { Filter: require("../models/Filter") };
 
 
 /**
- * Collections.FullPalette
+ * Collections.FilterSet
  *
+ * A group of filters
+ * 
  */
 
-module.exports.FullPalette = Backbone.Collection.extend({
+module.exports = Backbone.Collection.extend({
+    model: Models.Filter
+});
+},{"../../vendor/jquery":17,"../models/Filter":5,"backbone":18}],3:[function(require,module,exports){
+/* global require: false */
+/* global module: false */
+
+var $ = require("../../vendor/jquery"),
+    Backbone = require("backbone");
+
+Backbone.$ = $;
+
+var Models = { Color: require("../models/Color") };
+
+
+/**
+ * Collections.Palette
+ *
+ * A collection of colors that can be arranged
+ * in various ways, such as a color wheel
+ * 
+ */
+
+module.exports = Backbone.Collection.extend({
 
     model: Models.Color,
     url: "/colorData.json",
@@ -27,28 +90,17 @@ module.exports.FullPalette = Backbone.Collection.extend({
     }
 
 });
-
-
-/**
- * Collections.FilterSet
- *
- */
-
-module.exports.FilterSet = Backbone.Collection.extend({
-    model: Models.Filter
-});
-},{"../vendor/jquery":13,"./Models":2,"backbone":14,"underscore":15}],2:[function(require,module,exports){
+},{"../../vendor/jquery":17,"../models/Color":4,"backbone":18}],4:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
-/* global vent: false */
 
-var $ = require("../vendor/jquery"),
+var $ = require("../../vendor/jquery"),
     _ = require("underscore"),
     Backbone = require("backbone");
 
 Backbone.$ = $;
 
-var converter = require("../lib/colorConverter");
+var converter = require("../../lib/colorConverter");
 
 /**
  * Models.Color
@@ -60,7 +112,7 @@ var converter = require("../lib/colorConverter");
  * 
  */
 
-module.exports.Color = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
     parse: function (response) {
 
@@ -84,6 +136,14 @@ module.exports.Color = Backbone.Model.extend({
     }
 
 });
+},{"../../lib/colorConverter":13,"../../vendor/jquery":17,"backbone":18,"underscore":19}],5:[function(require,module,exports){
+/* global require: false */
+/* global module: false */
+
+var $ = require("../../vendor/jquery"),
+    Backbone = require("backbone");
+
+Backbone.$ = $;
 
 
 /**
@@ -95,10 +155,10 @@ module.exports.Color = Backbone.Model.extend({
  * 
  */
 
-module.exports.Filter = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
     defaults: { active: false }
 });
-},{"../lib/colorConverter":9,"../vendor/jquery":13,"backbone":14,"underscore":15}],3:[function(require,module,exports){
+},{"../../vendor/jquery":17,"backbone":18}],6:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 /* global vent: false */
@@ -157,7 +217,7 @@ module.exports = Backbone.View.extend({
         return this;
     }
 });
-},{"../../lib/getTemplate":11,"../../vendor/jquery":13,"backbone":14,"underscore":15}],4:[function(require,module,exports){
+},{"../../lib/getTemplate":15,"../../vendor/jquery":17,"backbone":18,"underscore":19}],7:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 /* global vent: false */
@@ -230,7 +290,63 @@ module.exports = Backbone.View.extend({
         return this;
     }
 });
-},{"../../vendor/jquery":13,"./ColorWedge":3,"backbone":14,"underscore":15}],5:[function(require,module,exports){
+},{"../../vendor/jquery":17,"./ColorWedge":6,"backbone":18,"underscore":19}],8:[function(require,module,exports){
+/* global require: false */
+/* global module: false */
+
+var $ = require("../../vendor/jquery"),
+    Backbone = require("backbone");
+
+Backbone.$ = $;
+
+var Collections = {
+        Palette: require("../collections/Palette"),
+        FilterSet: require("../collections/FilterSet")
+    },
+    Views = {
+        ColorWheel: require("./ColorWheel"),
+        FilterSet: require("./FilterSet")
+    };
+    
+var getColorTags = require("../../lib/parseColorTags");
+
+/**
+ * Views.ColorsHome
+ *
+ * @expects None
+ *
+ * Master view for /colors page
+ */
+
+module.exports = Backbone.View.extend({
+
+    el: $("#BrandApp"),
+
+    initialize: function () {
+        var def = {};
+        var master = this;
+
+        var palette = new Collections.Palette();
+        def.palette = palette.fetch();
+
+        $.when(def.palette).done(function (colorData, status, jqXHR) {
+            var wheel = new Views.ColorWheel({ collection: palette });
+            
+            var tags = getColorTags(palette.toJSON());
+
+            var filtersByColor = new Collections.FilterSet(tags.byColor);
+            var filtersByOther = new Collections.FilterSet(tags.byOther);
+
+            var colorSet = new Views.FilterSet({ collection: filtersByColor });
+            var otherSet = new Views.FilterSet({ collection: filtersByOther }); 
+            
+            master.$el.append(colorSet.render().el, otherSet.render().el);
+            master.$el.append(wheel.render().el);
+        });
+    }
+
+});
+},{"../../lib/parseColorTags":16,"../../vendor/jquery":17,"../collections/FilterSet":2,"../collections/Palette":3,"./ColorWheel":7,"./FilterSet":10,"backbone":18}],9:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 /* global vent: false */
@@ -286,7 +402,7 @@ module.exports = Backbone.View.extend({
         return this;
     }
 });
-},{"../../lib/getTemplate":11,"../../vendor/jquery":13,"backbone":14}],6:[function(require,module,exports){
+},{"../../lib/getTemplate":15,"../../vendor/jquery":17,"backbone":18}],10:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -324,7 +440,7 @@ module.exports = Backbone.View.extend({
     }
 
 });
-},{"../../vendor/jquery":13,"./Filter":5,"backbone":14}],7:[function(require,module,exports){
+},{"../../vendor/jquery":17,"./Filter":9,"backbone":18}],11:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -333,63 +449,48 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
-var Collections = require("../Collections"),
-    Views = {
-        FilterSet: require("./FilterSet"),
-        ColorWheel: require("./ColorWheel")
-    };
-    
-var getColorTags = require("../../lib/parseColorTags");
-
-/**
- * Views.Master
- *
- * @expects None
- *
- * Master view to rule all others
- */
+var getTemplate = require("../../lib/getTemplate");
 
 module.exports = Backbone.View.extend({
 
-    el: $("#colorApp"),
+    el: $("#BrandApp"),
+    template: getTemplate("templateHome"),
 
     initialize: function () {
-        var def = {};
-        var master = this;
+        this.render();
+    },
 
-        var palette = new Collections.FullPalette();
-        def.palette = palette.fetch();
+    events: {
+        "click a": function (e) {
+            e.preventDefault();
+            console.log($(e.currentTarget).attr('href'));
+        }
+    },
 
-        $.when(def.palette).done(function (colorData, status, jqXHR) {
-            var wheel = new Views.ColorWheel({ collection: palette });
-            
-            var tags = getColorTags(palette.toJSON());
+    render: function () {
 
-            var filtersByColor = new Collections.FilterSet(tags.byColor);
-            var filtersByOther = new Collections.FilterSet(tags.byOther);
+        this.$el.html(this.template({
+            pageTitle: "Super Brandmogrifier",
+            links: [
+                { text: "Colors", target: "/colors" }
+            ]
+        }));
 
-            var colorSet = new Views.FilterSet({ collection: filtersByColor });
-            var otherSet = new Views.FilterSet({ collection: filtersByOther }); 
-            
-            master.$el.append(colorSet.render().el, otherSet.render().el);
-            master.$el.append(wheel.render().el);
-        });
+        return this;
     }
 
 });
-},{"../../lib/parseColorTags":12,"../../vendor/jquery":13,"../Collections":1,"./ColorWheel":4,"./FilterSet":6,"backbone":14}],8:[function(require,module,exports){
+},{"../../lib/getTemplate":15,"../../vendor/jquery":17,"backbone":18}],12:[function(require,module,exports){
 /* global require: false */
-/* global vent: false */
+/* global vent: true */
 
-var Backbone = require("backbone");
-var $ = require("./vendor/jquery");
-var _ = require("underscore");
+var Backbone = require("backbone"),
+    $ = require("./vendor/jquery"),
+    _ = require("underscore");
 
 Backbone.$ = $;
 
-var Views = {
-    Master: require("./app/views/Master")
-};
+var AppRouter = require("./app/Router");
 
 /* Global event pub/sub object */
 vent = _.extend({}, Backbone.Events);
@@ -401,10 +502,11 @@ vent = _.extend({}, Backbone.Events);
  */
 
 $(document).ready(function () {
-    new Views.Master();
+    new AppRouter();
+    Backbone.history.start();
 });
 
-},{"./app/views/Master":7,"./vendor/jquery":13,"backbone":14,"underscore":15}],9:[function(require,module,exports){
+},{"./app/Router":1,"./vendor/jquery":17,"backbone":18,"underscore":19}],13:[function(require,module,exports){
 /* global module: false */
 /* global require: false */
 
@@ -467,7 +569,7 @@ ColorConverter.prototype.rgbToCmyk = function (rgb) {
 };
 
 module.exports = new ColorConverter();
-},{"./lib/RGB":10}],10:[function(require,module,exports){
+},{"./lib/RGB":14}],14:[function(require,module,exports){
 /* global module: false */
 
 var RGB = function (rgb) {
@@ -572,7 +674,7 @@ RGB.prototype.getCmykYellow = function (k) {
 };
 
 module.exports = RGB;
-},{}],11:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -582,7 +684,7 @@ var $ = require("../vendor/jquery");
 module.exports = function (id) {
     return _.template($("#" + id).html());
 };
-},{"../vendor/jquery":13,"underscore":15}],12:[function(require,module,exports){
+},{"../vendor/jquery":17,"underscore":19}],16:[function(require,module,exports){
 /* global require: false */
 /* global module: false */
 
@@ -614,7 +716,7 @@ module.exports = function (data) {
 
     return tags;
 };
-},{"underscore":15}],13:[function(require,module,exports){
+},{"underscore":19}],17:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v1.10.2
  * http://jquery.com/
@@ -10404,7 +10506,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 }
 
 })( window );
-},{}],14:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 //     Backbone.js 1.1.0
 
 //     (c) 2010-2011 Jeremy Ashkenas, DocumentCloud Inc.
@@ -11987,7 +12089,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }).call(this);
 
-},{"underscore":15}],15:[function(require,module,exports){
+},{"underscore":19}],19:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -13265,4 +13367,4 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }).call(this);
 
-},{}]},{},[8])
+},{}]},{},[12])

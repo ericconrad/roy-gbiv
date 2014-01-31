@@ -14,7 +14,16 @@
         <link rel="stylesheet" href="build/css/style.css">
     </head>
     <body>
-        <div id="colorApp"></div>
+        <div id="BrandApp"></div>
+
+        <script id="templateHome" type="text/x-underscore">
+            <h1><%= pageTitle %></h1>
+            <ul class="nav">
+            <% _.each(links, function (link, i) { %>
+                <li><a href="<%= link.target %>"><%= link.text %></a></li>
+            <% }); %>
+            </ul>
+        </script>
 
         <script id="colorWedge" type="text/x-underscore">
             <div class='bg' style="background-color: rgb(<%= color.values.rgb.join(',') %>);">
