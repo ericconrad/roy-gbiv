@@ -28,7 +28,6 @@ module.exports = Backbone.View.extend({
     initialize: function () {
 
         vent.on("filter:state", function (list) {
-
             if (list.length === 0 || _.intersection(this.model.get("families"), list).length > 0) {
                 this.$el.removeClass("hidden");
 
@@ -36,7 +35,6 @@ module.exports = Backbone.View.extend({
                 this.$el.addClass("hidden");
 
             }
-
         }, this);
     },
 

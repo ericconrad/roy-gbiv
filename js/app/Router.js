@@ -25,7 +25,7 @@ module.exports = Backbone.Router.extend({
     },
 
     home: function () {
-        new Views.Home({ attributes: { router: this }} );
+        new Views.Home({ attributes: { router: this } } );
     },
 
     colorsHome: function () {
