@@ -51,7 +51,8 @@ gulp.task('scripts:dev', ['jshint:dev'], function () {
         
     return gulp.src($$.scripts.build)
         .pipe(browserify({
-            transform: ["node-underscorify"]
+            transform: ["node-underscorify"],
+            debug: true
         }))
         .pipe(gulp.dest($$.buildDir.js))
 
