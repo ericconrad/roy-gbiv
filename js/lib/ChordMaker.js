@@ -64,19 +64,23 @@ Maker.prototype.Complementary = function (n) {
 
 };
 
+Maker.prototype.SplitComplementary = function (n) {
+
+};
+
 Maker.prototype.Triad = function (n) {
 
 };
 
-Maker.prototype.Square = function (n) {
+Maker.prototype.Square = function () {
 
 };
 
-Maker.prototype.TetradicPositive = function (n) {
+Maker.prototype.TetradicPositive = function () {
 
 };
 
-Maker.prototype.TetradicNegative = function (n) {
+Maker.prototype.TetradicNegative = function () {
 
 };
 
