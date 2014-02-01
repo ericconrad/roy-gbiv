@@ -1,73 +1,84 @@
 /* global require: false */
 /* global module: false */
 
-var _ = require("underscore");
+var _ = require("underscore"),
+    wheeler = require("./wheeler");
 
-var Collections = { Palette: require("../app/collections/Palette") };
-
-/**
- * So this is not a good way to be doing this, so I'm stopping for now.
- *
- * TODO:
- *
- * Change this class so that it accepts an HSL base and a list of
- * possible color objects, along with a 'find' function to locate
- * the HSL value in each object passed in, so that the compare logic
- * can return a set of objects that have the correct HSL values without
- * having to be totally coupled to the Backbone system in any way.
- * 
- */
-
-var Maker = function (options) {
+var Maker = function (baseHue, options) {
 
     var defaults = {
-        tolerance: 60,
         n: 3,
-        angle: 180,
-
+        differ: function (a, b) {
+            return Math.abs(b - a);
+        }
     };
 
     this.options = _.extend({}, defaults, options);
-    this.base = this.options.color.get("values").hsl;
-    this.possibles = this.options.masterPalette;
-};
+    this.base = baseHue;
 
-Maker.prototype.pluckHue = function (color) {
-    return color.get("values").hsl[0]
 };
 
 Maker.prototype.compute = function (options) {
-    var options = _.extend({}, this.options, options);
+    options = _.extend({}, this.options, options);
+    var adjustedHue = wheeler.moveGValueOnYWheel(this.base, options.angle);
+
+    if (!options.universe) {
+        return adjustedHue;
+    }
+
+    return this.closest(adjustedHue, options);
+};
+
+Maker.prototype.closest = function (hue, options) {
+
+    if (!options.universe) {
+        throw new Error("Closest needs a universe of colors to compare against");
+    }
+
+    var diffed = _.map(options.universe, function (color, i) {
+        return {
+            color: color,
+            diff: options.differ(hue, color)
+        };
+    });
+
+    diffed.sort(function (a, b) {
+        return a.diff > b.diff ? 1 : -1;
+    });
+
+    return diffed.slice(0, options.n);
+};
+
+
+Maker.prototype.Analagous = function (n) {
     
+    n = n ? n + 1 : 6;
+
+    var result = this.compute({ n: n, angle: 0 });
+
+    // Remove first result because it's the base color
+    return result.slice(1);
+};
+
+Maker.prototype.Complementary = function (n) {
 
 };
 
-
-
-Maker.prototype.Analagous = function (options) {
+Maker.prototype.Triad = function (n) {
 
 };
 
-Maker.prototype.Complementary = function (options) {
+Maker.prototype.Square = function (n) {
 
 };
 
-Maker.prototype.Triad = function (options) {
+Maker.prototype.TetradicPositive = function (n) {
 
 };
 
-Maker.prototype.Square = function () {
+Maker.prototype.TetradicNegative = function (n) {
 
 };
-
-Maker.prototype.TetradicPositive = function () {
-
-};
-
-Maker.prototype.TetradicNegative = function () {
-
-};
-
 
 
 module.exports = Maker;
