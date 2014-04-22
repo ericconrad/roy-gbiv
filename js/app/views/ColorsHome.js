@@ -36,7 +36,7 @@ module.exports = Backbone.View.extend({
 
         $.when(palette.fetch()).done(function () {
 
-            console.log('palette!', palette.toJSON());
+            // console.log('palette!', palette.toJSON());
 
             var wheel = new Views.ColorWheel({ collection: palette });
             
