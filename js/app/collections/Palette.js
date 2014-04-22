@@ -13,17 +13,12 @@ var Models = { Color: require("../models/Color") };
  * Collections.Palette
  *
  * A collection of colors that can be arranged
- * in various ways, such as a color wheel
+ * in various ways
  * 
  */
 
 module.exports = Backbone.Collection.extend({
 
-    model: Models.Color,
-    url: "/colorData.json",
-
-    initialize: function () {
-       this.filtersOn = {};
-    }
+    model: Models.Color
 
 });

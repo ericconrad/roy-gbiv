@@ -7,7 +7,7 @@ var $ = require("../../vendor/jquery"),
 Backbone.$ = $;
 
 var Collections = {
-        Palette: require("../collections/Palette"),
+        MasterPalette: require("../collections/MasterPalette"),
         FilterSet: require("../collections/FilterSet")
     },
     Views = {
@@ -30,14 +30,14 @@ module.exports = Backbone.View.extend({
     el: $("#BrandApp"),
 
     initialize: function () {
-        var def = {};
-        var master = this;
-        var div = $("<div>");
+        var master = this,
+            div = $("<div>"),
+            palette = new Collections.MasterPalette();
 
-        var palette = new Collections.Palette();
-        def.palette = palette.fetch();
+        $.when(palette.fetch()).done(function () {
 
-        $.when(def.palette).done(function (colorData, status, jqXHR) {
+            // console.log('palette!', palette.toJSON());
+
             var wheel = new Views.ColorWheel({ collection: palette });
             
             var tags = getColorTags(palette.toJSON());
