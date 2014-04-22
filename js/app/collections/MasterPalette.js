@@ -8,6 +8,8 @@ var $ = require("../../vendor/jquery"),
 
 Backbone.$ = $;
 
+var colorData = location.pathname + "colorData.json";
+
 // var Models = { Color: require("../models/Color") };
 var Collections = { Palette: require("./Palette") };
 
@@ -28,7 +30,7 @@ function extract(set) {
 
 module.exports = Collections.Palette.extend({
     
-    url: "/colorData.json",
+    url: colorData,
 
     initialize: function () {
         this.filtersOn = {};
